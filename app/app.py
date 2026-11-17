@@ -2,7 +2,9 @@ import os
 from flask import Flask
 from pymongo import MongoClient
 from repositories.pessoa_repository import PessoaRepository
+from repositories.compromisso_repository import CompromissoRepository
 from controllers.pessoa_controller import pessoa_controller
+from controllers.compromisso_controller import compromisso_controller
 
 def iniciar_app():
     app = Flask(__name__)
@@ -11,8 +13,10 @@ def iniciar_app():
     app.db = client[os.environ["MONGO_DATABASE"]]
 
     PessoaRepository(app.db).garantir_indices()
+    CompromissoRepository(app.db).garantir_indices()
 
     app.register_blueprint(pessoa_controller)
+    app.register_blueprint(compromisso_controller)
 
     return app
 
