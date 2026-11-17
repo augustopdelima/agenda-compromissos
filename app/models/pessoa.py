@@ -7,15 +7,16 @@ class Pessoa:
     def to_dict(self) -> dict:
         return {
             "nome": self.nome,
-            "email": self.email
-        }
-
+            "email" : self.email,
+        }    
+    
     @classmethod
-    def from_dict(cls, data: dict | None):
-        if not data:
+    def from_dict(cls, dados: dict | None):
+        if not dados:
             return None
+        
         return cls(
-            _id=data.get("_id"),
-            nome=data.get("nome",""),
-            email=data.get("email","")
+            _id=dados.get("_id"),
+            nome=dados.get("nome",""),
+            email=dados.get("email","")
         )
