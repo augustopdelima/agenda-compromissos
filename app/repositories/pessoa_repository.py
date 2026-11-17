@@ -1,5 +1,7 @@
 from models.pessoa import Pessoa
 
+from bson import ObjectId
+
 class PessoaRepository:
     def __init__(self, db):
         self.colecao = db["pessoas"]
@@ -15,6 +17,15 @@ class PessoaRepository:
     def buscar_todos(self) -> list[Pessoa]:
         cursor = self.colecao.find().sort("nome", 1)
         return [Pessoa.from_dict(doc) for doc in cursor]
+
+    def buscar_por_ids(self, ids: list) -> list[Pessoa]:
+        if not ids:
+            return []
+
+        documentos = self.colecao.find({
+            "_id": {"$in": [ObjectId(id_pessoa) for id_pessoa in ids]}
+        })
+        return [Pessoa.from_dict(doc) for doc in documentos]
 
     def buscar_por_email(self, email:str) -> Pessoa | None:
         doc = self.colecao.find_one({"email": email.strip().lower()})
