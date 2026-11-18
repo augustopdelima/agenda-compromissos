@@ -4,7 +4,7 @@
     <nav>
         <a href="{{ url_for('home.index') }}"
            class="{{ 'ativo' if request.endpoint == 'home.index' else '' }}">
-            Início
+            Home
         </a>
         <a href="{{ url_for('compromisso.index') }}"
            class="{{ 'ativo' if request.endpoint in ['compromisso.index', 'compromisso.criar'] else '' }}">
