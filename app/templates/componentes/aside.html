@@ -1,0 +1,18 @@
+<aside class="menu">
+    <h2>Agenda</h2>
+
+    <nav>
+        <a href="{{ url_for('home.index') }}"
+           class="{{ 'ativo' if request.endpoint == 'home.index' else '' }}">
+            Início
+        </a>
+        <a href="{{ url_for('compromisso.index') }}"
+           class="{{ 'ativo' if request.endpoint in ['compromisso.index', 'compromisso.criar'] else '' }}">
+            Compromissos
+        </a>
+        <a href="{{ url_for('pessoas.index') }}"
+           class="{{ 'ativo' if request.endpoint in ['pessoas.index', 'pessoas.criar'] else '' }}">
+            Pessoas
+        </a>
+    </nav>
+</aside>

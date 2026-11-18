@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Agenda de Compromissos{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="layout">
+        {% include "componentes/aside.html" %}
+
+        <main class="conteudo">
+            {% block conteudo %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
