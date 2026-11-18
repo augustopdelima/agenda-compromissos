@@ -1,0 +1,16 @@
+<div class="lista-pessoas">
+    {% for pessoa in pessoas %}
+        <article class="pessoa-card">
+            <span class="pessoa-card__avatar">{{ pessoa.nome[:1]|upper }}</span>
+
+            <div class="pessoa-card__dados">
+                <strong class="pessoa-card__nome">{{ pessoa.nome }}</strong>
+                <small class="pessoa-card__email" title="{{ pessoa.email }}">
+                    {{ pessoa.email }}
+                </small>
+            </div>
+        </article>
+    {% else %}
+        <p class="estado-vazio">Nenhuma pessoa cadastrada ainda.</p>
+    {% endfor %}
+</div>

@@ -6,57 +6,48 @@
     <h1>Pessoas</h1>
 
     <!-- Formulário de Cadastro -->
-    <form action="{{ url_for('pessoas.criar') }}" method="POST" novalidate>
-        <div class="grupo-campo">
-            <label for="nome">Nome</label>
-            <input
-                type="text"
-                id="nome"
-                name="nome"
-                value="{{ formulario.get('nome', '') if formulario else '' }}"
-                class="{{ 'invalido' if erros and erros.get('nome') else '' }}"
-            >
-            {% if erros and erros.get('nome') %}
-                <span class="texto-erro">{{ erros.get('nome') }}</span>
-            {% endif %}
+    <form class="formulario" action="{{ url_for('pessoas.criar') }}" method="POST" novalidate>
+        <div class="formulario__cabecalho">
+            <h2 class="formulario__titulo">Nova pessoa</h2>
+            <p class="formulario__descricao">Preencha os dados para cadastrar uma nova pessoa.</p>
         </div>
 
-        <div class="grupo-campo">
-            <label for="email">E-mail</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                value="{{ formulario.get('email', '') if formulario else '' }}"
-                class="{{ 'invalido' if erros and erros.get('email') else '' }}"
-            >
-            {% if erros and erros.get('email') %}
-                <span class="texto-erro">{{ erros.get('email') }}</span>
-            {% endif %}
-        </div>
+        <div class="formulario__corpo">
+            <div class="formulario__grid">
+                <div class="grupo-campo">
+                    <label for="nome">Nome</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        value="{{ formulario.get('nome', '') if formulario else '' }}"
+                        class="{{ 'invalido' if erros and erros.get('nome') else '' }}"
+                    >
+                    {% if erros and erros.get('nome') %}
+                        <span class="texto-erro">{{ erros.get('nome') }}</span>
+                    {% endif %}
+                </div>
 
-        <button type="submit">Cadastrar</button>
+                <div class="grupo-campo">
+                    <label for="email">E-mail</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ formulario.get('email', '') if formulario else '' }}"
+                        class="{{ 'invalido' if erros and erros.get('email') else '' }}"
+                    >
+                    {% if erros and erros.get('email') %}
+                        <span class="texto-erro">{{ erros.get('email') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button type="submit" class="botao">Cadastrar pessoa</button>
+        </div>
     </form>
 
     <!-- Lista de Pessoas Cadastradas -->
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for pessoa in pessoas %}
-                <tr>
-                    <td>{{ pessoa.nome }}</td>
-                    <td>{{ pessoa.email }}</td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="2">Nenhuma pessoa cadastrada ainda.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h2>Pessoas cadastradas</h2>
+    {% include "componentes/lista_pessoas.html" %}
 {% endblock %}
