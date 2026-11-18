@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block titulo %}Compromissos — Agenda de Compromissos{% endblock %}
+
+{% block conteudo %}
+    <h1>Compromissos</h1>
+
+    <!-- Formulário de Cadastro -->
+    <form action="{{ url_for('compromisso.criar') }}" method="POST" novalidate>
+        <div class="grupo-campo">
+            <label for="data_horario">Data/Horário</label>
+            <input
+                type="datetime-local"
+                id="data_horario"
+                name="data_horario"
+                value="{{ formulario.get('data_horario', '') }}"
+                class="{{ 'invalido' if erros.get('data_horario') else '' }}"
+            >
+            {% if erros.get('data_horario') %}
+                <span class="texto-erro">{{ erros.get('data_horario') }}</span>
+            {% endif %}
+        </div>
+
+        <div class="grupo-campo">
+            <label for="titulo">Título</label>
+            <input
+                type="text"
+                id="titulo"
+                name="titulo"
+                value="{{ formulario.get('titulo', '') }}"
+                class="{{ 'invalido' if erros.get('titulo') else '' }}"
+            >
+            {% if erros.get('titulo') %}
+                <span class="texto-erro">{{ erros.get('titulo') }}</span>
+            {% endif %}
+        </div>
+
+        <div class="grupo-campo">
+            <label for="descricao">Descrição</label>
+            <textarea
+                id="descricao"
+                name="descricao"
+                class="{{ 'invalido' if erros.get('descricao') else '' }}"
+            >{{ formulario.get('descricao', '') }}</textarea>
+        </div>
+
+        <div class="grupo-campo">
+            <label>Pessoas envolvidas</label>
+            {% for pessoa in pessoas %}
+                <label class="opcao-pessoa">
+                    <input
+                        type="checkbox"
+                        name="pessoas"
+                        value="{{ pessoa.id }}"
+                        {{ 'checked' if pessoa.id in formulario.get('pessoas', []) else '' }}
+                    >
+                    {{ pessoa.nome }} ({{ pessoa.email }})
+                </label>
+            {% else %}
+                <span class="texto-erro">Cadastre pessoas antes de criar um compromisso.</span>
+            {% endfor %}
+            {% if erros.get('pessoas') %}
+                <span class="texto-erro">{{ erros.get('pessoas') }}</span>
+            {% endif %}
+        </div>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <!-- Lista de Compromissos Cadastrados -->
+    {% include "componentes/lista_compromissos.html" %}
+{% endblock %}
