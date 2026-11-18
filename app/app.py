@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from pymongo import MongoClient
 from repositories.pessoa_repository import PessoaRepository
 from repositories.compromisso_repository import CompromissoRepository
@@ -19,6 +19,10 @@ def iniciar_app():
     app.register_blueprint(home_controller)
     app.register_blueprint(pessoa_controller)
     app.register_blueprint(compromisso_controller, url_prefix="/compromissos")
+
+    @app.errorhandler(404)
+    def pagina_nao_encontrada(erro):
+        return render_template("404.html"), 404
 
     return app
 
