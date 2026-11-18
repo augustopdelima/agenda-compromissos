@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block titulo %}Início — Agenda de Compromissos{% endblock %}
+
+{% block conteudo %}
+    <h1>Início</h1>
+
+    <p>Compromissos cadastrados na agenda:</p>
+
+    {% include "componentes/lista_compromissos.html" %}
+{% endblock %}
