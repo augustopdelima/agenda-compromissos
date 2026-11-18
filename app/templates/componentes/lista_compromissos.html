@@ -1,36 +1,39 @@
-<table>
-    <thead>
-        <tr>
-            <th>Data/Horário</th>
-            <th>Título</th>
-            <th>Descrição</th>
-            <th>Pessoas envolvidas</th>
-        </tr>
-    </thead>
+<div class="lista-compromissos">
+    {% for item in compromissos %}
+        {% set compromisso = item.compromisso %}
 
-    <tbody>
-        {% for item in compromissos %}
-            {% set compromisso = item.compromisso %}
+        <article class="compromisso-card">
+            <span class="compromisso-card__data">
+                {{ compromisso.data_horario.strftime("%d/%m/%Y %H:%M") }}
+            </span>
 
-            <tr>
-                <td>
-                    {{ compromisso.data_horario.strftime("%d/%m/%Y %H:%M") }}
-                </td>
+            <h3 class="compromisso-card__titulo">{{ compromisso.titulo }}</h3>
 
-                <td>{{ compromisso.titulo }}</td>
+            <p class="compromisso-card__descricao">{{ compromisso.descricao }}</p>
 
-                <td>{{ compromisso.descricao }}</td>
+            <div class="compromisso-card__pessoas-block">
+                <h4 class="compromisso-card__rotulo">
+                    Pessoas envolvidas ({{ item.pessoas|length }})
+                </h4>
 
-                <td>
-                    {% for pessoa in item.pessoas %}
-                        <div>{{ pessoa.nome }} ({{ pessoa.email }})</div>
-                    {% endfor %}
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">Nenhum compromisso cadastrado ainda.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                {% if item.pessoas %}
+                    <ul class="compromisso-card__pessoas">
+                        {% for pessoa in item.pessoas %}
+                            <li class="compromisso-card__pessoa"
+                                data-inicial="{{ pessoa.nome[:1]|upper }}">
+                                <span class="compromisso-card__pessoa-dados">
+                                    <strong>{{ pessoa.nome }}</strong>
+                                    <small>{{ pessoa.email }}</small>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="compromisso-card__sem-pessoas">Sem pessoas envolvidas.</p>
+                {% endif %}
+            </div>
+        </article>
+    {% else %}
+        <p class="estado-vazio">Nenhum compromisso cadastrado ainda.</p>
+    {% endfor %}
+</div>
