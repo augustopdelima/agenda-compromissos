@@ -15,7 +15,7 @@ class CompromissoRepository:
         return compromisso
 
     def buscar_todos(self) -> list[Compromisso]:
-        cursor = self.colecao.find().sort("titulo",1)
+        cursor = self.colecao.find().sort("data_horario", 1)
         return [Compromisso.from_dict(doc) for doc in cursor]
 
     def buscar_por_horario(self, horario: datetime) -> list[Compromisso]:

@@ -17,12 +17,23 @@ def obter_pessoa_repository() -> PessoaRepository:
     return g.pessoa_repository
 
 def montar_compromissos_com_pessoas(compromissos: list) -> list[dict]:
-    pessoa_repository = obter_pessoa_repository()
+    ids_pessoas = [
+        id_pessoa
+        for compromisso in compromissos
+        for id_pessoa in compromisso.pessoas
+    ]
+
+    pessoas = obter_pessoa_repository().buscar_por_ids(ids_pessoas)
+    pessoas_por_id = {pessoa.id: pessoa for pessoa in pessoas}
 
     return [
         {
             "compromisso": compromisso,
-            "pessoas": pessoa_repository.buscar_por_ids(compromisso.pessoas)
+            "pessoas": [
+                pessoas_por_id[id_pessoa]
+                for id_pessoa in compromisso.pessoas
+                if id_pessoa in pessoas_por_id
+            ]
         }
         for compromisso in compromissos
     ]
@@ -47,7 +58,7 @@ def renderizar_index(erros: dict | None = None, formulario: dict | None = None, 
         formulario=formulario or {},
     ), codigo_status
 
-@compromisso_controller.route("/", methods=["GET"])
+@compromisso_controller.route("/", methods=["GET"], strict_slashes=False)
 def index():
     return renderizar_index()
 
