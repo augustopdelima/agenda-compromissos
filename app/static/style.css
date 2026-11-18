@@ -1,0 +1,193 @@
+:root {
+    --cor-fundo: #f9fafb;
+    --cor-texto: #1f2937;
+    --cor-menu: #1f2937;
+    --cor-menu-texto: #e5e7eb;
+    --cor-destaque: #2563eb;
+    --cor-destaque-hover: #1d4ed8;
+    --cor-borda: #d1d5db;
+    --cor-erro: #dc2626;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: var(--cor-texto);
+    background-color: var(--cor-fundo);
+}
+
+/* Layout principal: menu lateral fixo + conteúdo que muda */
+.layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+.menu {
+    background-color: var(--cor-menu);
+    color: var(--cor-menu-texto);
+    padding: 2rem 1.25rem;
+}
+
+.menu h2 {
+    margin: 0 0 1.5rem;
+    color: #ffffff;
+    font-size: 1.15rem;
+}
+
+.menu nav {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.menu a {
+    display: block;
+    padding: 0.6rem 0.75rem;
+    border-radius: 4px;
+    color: var(--cor-menu-texto);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.menu a:hover {
+    background-color: #374151;
+    color: #ffffff;
+}
+
+.menu a.ativo {
+    background-color: var(--cor-destaque);
+    color: #ffffff;
+}
+
+.conteudo {
+    width: 100%;
+    max-width: 1100px;
+    padding: 2rem;
+}
+
+.conteudo h1 {
+    margin-top: 0;
+}
+
+/* Formulários (reutilizado por pessoas e compromissos) */
+form {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.grupo-campo {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="datetime-local"],
+textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--cor-borda);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+input.invalido,
+textarea.invalido {
+    border-color: var(--cor-erro);
+}
+
+.texto-erro {
+    color: var(--cor-erro);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.opcao-pessoa {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: normal;
+    margin-bottom: 0.25rem;
+}
+
+.opcao-pessoa input {
+    width: auto;
+}
+
+button {
+    background-color: var(--cor-destaque);
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--cor-destaque-hover);
+}
+
+/* Tabelas de listagem (reutilizado pelas páginas) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+}
+
+th {
+    background-color: #f3f4f6;
+}
+
+@media (max-width: 700px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .menu {
+        padding: 1rem;
+    }
+
+    .menu h2 {
+        margin-bottom: 0.75rem;
+    }
+
+    .menu nav {
+        grid-auto-flow: column;
+        gap: 0.5rem;
+    }
+
+    .conteudo {
+        padding: 1rem;
+    }
+}
