@@ -1,0 +1,36 @@
+<table>
+    <thead>
+        <tr>
+            <th>Data/Horário</th>
+            <th>Título</th>
+            <th>Descrição</th>
+            <th>Pessoas envolvidas</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in compromissos %}
+            {% set compromisso = item.compromisso %}
+
+            <tr>
+                <td>
+                    {{ compromisso.data_horario.strftime("%d/%m/%Y %H:%M") }}
+                </td>
+
+                <td>{{ compromisso.titulo }}</td>
+
+                <td>{{ compromisso.descricao }}</td>
+
+                <td>
+                    {% for pessoa in item.pessoas %}
+                        <div>{{ pessoa.nome }} ({{ pessoa.email }})</div>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Nenhum compromisso cadastrado ainda.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
