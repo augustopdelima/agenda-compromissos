@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar compromisso — Agenda de Compromissos{% endblock %}
+
+{% block conteudo %}
+    <h1>Editar compromisso</h1>
+
+    <form class="formulario"
+          action="{{ url_for('compromisso.atualizar', id=compromisso.id) }}"
+          method="POST"
+          novalidate>
+        <div class="formulario__cabecalho">
+            <h2 class="formulario__titulo">Alterar título e descrição</h2>
+            <p class="formulario__descricao">
+                Os demais dados do compromisso permanecem inalterados.
+            </p>
+        </div>
+
+        <div class="formulario__corpo">
+            <div class="formulario__info">
+                <p><strong>Data/Horário:</strong>
+                    {{ compromisso.data_horario.strftime("%d/%m/%Y %H:%M") }}
+                </p>
+                <p><strong>Pessoas envolvidas:</strong>
+                    {% for pessoa in pessoas %}
+                        {{ pessoa.nome }}{% if not loop.last %}, {% endif %}
+                    {% else %}
+                        Nenhuma
+                    {% endfor %}
+                </p>
+                <small>Estes campos não podem ser alterados nesta edição.</small>
+            </div>
+
+            {% if erros.get('geral') %}
+                <span class="texto-erro">{{ erros.get('geral') }}</span>
+            {% endif %}
+            {% if erros.get('data_horario') %}
+                <span class="texto-erro">{{ erros.get('data_horario') }}</span>
+            {% endif %}
+            {% if erros.get('pessoas') %}
+                <span class="texto-erro">{{ erros.get('pessoas') }}</span>
+            {% endif %}
+
+            <div class="grupo-campo">
+                <label for="titulo">Título</label>
+                <input
+                    type="text"
+                    id="titulo"
+                    name="titulo"
+                    value="{{ formulario.get('titulo', compromisso.titulo) }}"
+                    class="{{ 'invalido' if erros.get('titulo') else '' }}"
+                >
+                {% if erros.get('titulo') %}
+                    <span class="texto-erro">{{ erros.get('titulo') }}</span>
+                {% endif %}
+            </div>
+
+            <div class="grupo-campo">
+                <label for="descricao">Descrição</label>
+                <textarea
+                    id="descricao"
+                    name="descricao"
+                    class="{{ 'invalido' if erros.get('descricao') else '' }}"
+                >{{ formulario.get('descricao', compromisso.descricao) }}</textarea>
+            </div>
+
+            <div class="formulario__acoes">
+                <button type="submit" class="botao">Salvar alterações</button>
+                <a class="botao-cancelar"
+                   href="{{ url_for('compromisso.index') }}">Cancelar</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
