@@ -434,6 +434,89 @@ button:hover {
     color: var(--cor-texto-suave);
 }
 
+/* Botão/link de edição no card de compromisso */
+.compromisso-card__acoes {
+    border-top: 1px solid #f3f4f6;
+    padding-top: 0.8rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.botao-editar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    background-color: #eff6ff;
+    color: var(--cor-destaque-hover);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.botao-editar::before {
+    content: "✎";
+    font-size: 0.9rem;
+}
+
+.botao-editar:hover {
+    background-color: #dbeafe;
+    border-color: var(--cor-destaque);
+}
+
+/* Dados fixos e ações no formulário de edição */
+.formulario__info {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.9rem 1rem;
+    background-color: #f8fafc;
+    border: 1px solid #eef2f7;
+    border-radius: 8px;
+}
+
+.formulario__info p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.formulario__info small {
+    color: var(--cor-texto-suave);
+    font-size: 0.78rem;
+}
+
+.formulario__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.formulario__acoes .botao {
+    flex: 1 1 220px;
+    width: auto;
+}
+
+.botao-cancelar {
+    flex: 0 1 auto;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    color: var(--cor-texto);
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.botao-cancelar:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
 .estado-vazio {
     grid-column: 1 / -1;
     margin: 0;
