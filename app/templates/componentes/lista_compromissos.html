@@ -32,6 +32,13 @@
                     <p class="compromisso-card__sem-pessoas">Sem pessoas envolvidas.</p>
                 {% endif %}
             </div>
+
+            <div class="compromisso-card__acoes">
+                <a class="botao-editar"
+                   href="{{ url_for('compromisso.editar', id=compromisso.id) }}">
+                    Editar
+                </a>
+            </div>
         </article>
     {% else %}
         <p class="estado-vazio">Nenhum compromisso cadastrado ainda.</p>
