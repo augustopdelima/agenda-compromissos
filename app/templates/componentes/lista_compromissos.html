@@ -34,6 +34,10 @@
             </div>
 
             <div class="compromisso-card__acoes">
+                <a class="botao-pessoas"
+                   href="{{ url_for('compromisso.gerenciar_pessoas', id=compromisso.id) }}">
+                    Pessoas
+                </a>
                 <a class="botao-editar"
                    href="{{ url_for('compromisso.editar', id=compromisso.id) }}">
                     Editar

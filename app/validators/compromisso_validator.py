@@ -14,15 +14,18 @@ class CompromissoValidador:
         self.erros = {}
         self._data_horario_convertida = None
         self._dados_limpos_edicao = {}
+        self._ids_pessoas_validos = []
 
         if modo == "criacao":
             self._validar_criacao()
         elif modo == "edicao":
             self._validar_edicao()
+        elif modo == "pessoas":
+            self._validar_pessoas_vinculadas()
         else:
             raise ValueError(f"Modo de validação desconhecido: {modo}")
 
-    # Regras individuais, compartilhadas pelos dois cenários
+    # Regras individuais, compartilhadas pelos modos de validação
     def _erro_titulo(self, titulo: str) -> str | None:
         if not titulo:
             return "O título é obrigatório."
@@ -38,10 +41,7 @@ class CompromissoValidador:
             return "Digite uma data e um horário válidos."
         return None
 
-    def _validar_pessoas(self, pessoas: list) -> str | None:
-        if not pessoas:
-            return "Selecione ao menos uma pessoa."
-
+    def _validar_ids_pessoas(self, pessoas: list) -> str | None:
         ids_validos = []
         for id_pessoa in pessoas:
             if not ObjectId.is_valid(id_pessoa):
@@ -52,7 +52,15 @@ class CompromissoValidador:
         pessoas_encontradas = self.repositorio.buscar_por_ids(ids_validos)
         if len(pessoas_encontradas) != len(ids_validos):
             return "Uma ou mais pessoas selecionadas não existem."
+
+        self._ids_pessoas_validos = ids_validos
         return None
+
+    def _validar_pessoas(self, pessoas: list) -> str | None:
+        if not pessoas:
+            return "Selecione ao menos uma pessoa."
+
+        return self._validar_ids_pessoas(pessoas)
 
     # Criação: continua exigindo todos os campos, com as mesmas mensagens
     def _validar_criacao(self):
@@ -95,6 +103,13 @@ class CompromissoValidador:
 
         self._dados_limpos_edicao = limpos
 
+    # Pessoas envolvidas: substituição integral, com lista vazia permitida
+    def _validar_pessoas_vinculadas(self):
+        pessoas = self.dados_brutos.get("pessoas", []) or []
+        mensagem = self._validar_ids_pessoas(pessoas)
+        if mensagem:
+            self.erros["pessoas"] = mensagem
+
     def eh_valido(self) -> bool:
         return len(self.erros) == 0
 
@@ -102,6 +117,8 @@ class CompromissoValidador:
     def dados_limpos(self) -> dict:
         if self.modo == "edicao":
             return self._dados_limpos_edicao
+        if self.modo == "pessoas":
+            return {"pessoas": self._ids_pessoas_validos}
 
         return {
             "data_horario": self._data_horario_convertida,
