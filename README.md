@@ -85,6 +85,14 @@ app/
     │   └── pessoas.html
     └── pessoas/
         └── index.html
+tests/                              # Testes unitários e de rotas (unittest)
+├── base.py                         # Banco em memória e app de teste
+├── test_app_config.py
+├── test_assets.py
+├── test_helpers.py
+├── test_models.py
+├── test_routes.py
+└── test_validators.py
 ```
 
 **Camadas:** controller → helpers → validator → repository → model. Os controllers ficam apenas com as rotas; os helpers concentram filtros, acesso a repositórios, leitura de formulários e renderização. A validação fica isolada no validator e o acesso ao banco nos repositories.
@@ -172,6 +180,28 @@ flask --app app:iniciar_app run --debug
 ```
 
 Nos exemplos sem Docker, defina também `SECRET_KEY` (`export SECRET_KEY="sua-chave"` no Linux/macOS ou `$env:SECRET_KEY = "sua-chave"` no PowerShell) para substituir a chave de desenvolvimento padrão.
+
+## Testes
+
+A suíte usa apenas `unittest` (já incluído no Python) e um banco em memória que simula as operações do PyMongo usadas pela aplicação. Não é preciso subir o MongoDB nem instalar pacotes extras.
+
+Rodando na imagem do projeto (recomendado — já contém Flask e PyMongo):
+
+```bash
+docker run --rm -v "$PWD":/workspace -w /workspace \
+  --entrypoint python agenda-compromissos-app:latest \
+  -m unittest discover -s tests -v
+```
+
+Se a imagem ainda não existir, construa-a antes com `docker build -t agenda-compromissos-app .`.
+
+Com as dependências instaladas localmente (`pip install -r requirements.txt`):
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Os testes cobrem modelos, validadores, helpers, rotas e templates (filtros, detalhes, mensagens flash, retorno à página de origem e estados vazios), configuração da aplicação e estrutura do CSS.
 
 ## Endpoints
 
