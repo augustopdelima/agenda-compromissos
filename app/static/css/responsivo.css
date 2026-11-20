@@ -1,0 +1,90 @@
+/* Breakpoints: carregar sempre por último */
+
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns: 200px minmax(0, 1fr);
+    }
+
+    .conteudo {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .menu {
+        padding: 1rem;
+    }
+
+    .menu h2 {
+        margin-bottom: 0.75rem;
+    }
+
+    .menu nav {
+        grid-auto-flow: column;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+    }
+
+    .menu a {
+        white-space: nowrap;
+    }
+
+    .conteudo {
+        padding: 1rem;
+    }
+
+    .conteudo h1,
+    .cabecalho-pagina h1 {
+        text-align: left;
+        font-size: 1.5rem;
+    }
+
+    .formulario__cabecalho,
+    .formulario__corpo {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .lista-compromissos,
+    .lista-pessoas {
+        grid-auto-rows: auto;
+    }
+
+    .detalhes__item {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+        padding: 1.25rem 1rem;
+    }
+
+    .detalhes__acoes {
+        justify-content: flex-start;
+        padding: 1rem;
+    }
+
+    .cabecalho-pagina {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .formulario__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .confirma-acao-botoes {
+        flex-direction: column;
+    }
+
+    .confirma-acao-botoes button {
+        width: 100%;
+    }
+
+    .resumo {
+        grid-template-columns: 1fr 1fr;
+    }
+}

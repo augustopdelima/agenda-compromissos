@@ -1,0 +1,58 @@
+/* Design tokens: cores, escalas e variáveis globais */
+
+:root {
+    /* Neutras */
+    --cor-fundo: #f9fafb;
+    --cor-superficie: #ffffff;
+    --cor-superficie-2: #f8fafc;
+    --cor-superficie-3: #f3f4f6;
+    --cor-texto: #1f2937;
+    --cor-texto-medio: #4b5563;
+    --cor-texto-suave: #6b7280;
+    --cor-borda-suave: #eef2f7;
+    --cor-borda: #e5e7eb;
+    --cor-borda-forte: #9ca3af;
+    --cor-menu: #1f2937;
+    --cor-menu-texto: #e5e7eb;
+    --cor-menu-hover: #374151;
+
+    /* Primária */
+    --cor-destaque: #2563eb;
+    --cor-destaque-hover: #1d4ed8;
+    --cor-primaria-suave: #eff6ff;
+    --cor-primaria-suave-2: #dbeafe;
+    --cor-primaria-borda: #bfdbfe;
+    --cor-primaria-texto: #1e40af;
+
+    /* Semânticas */
+    --cor-sucesso: #16a34a;
+    --cor-sucesso-suave: #dcfce7;
+    --cor-sucesso-texto: #166534;
+    --cor-erro: #dc2626;
+    --cor-erro-hover: #b91c1c;
+    --cor-erro-suave: #fef2f2;
+    --cor-erro-texto: #991b1b;
+    --cor-alerta: #d97706;
+    --cor-alerta-suave: #fef3c7;
+    --cor-alerta-texto: #92400e;
+
+    /* Escalas */
+    --espaco-1: 4px;
+    --espaco-2: 8px;
+    --espaco-3: 12px;
+    --espaco-4: 16px;
+    --espaco-6: 24px;
+    --espaco-8: 32px;
+    --espaco-12: 48px;
+    --raio-sm: 6px;
+    --raio-md: 8px;
+    --raio-lg: 12px;
+    --raio-pill: 999px;
+    --sombra-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --sombra-md: 0 2px 6px rgba(15, 23, 42, 0.06);
+    --sombra-lg: 0 10px 20px rgba(15, 23, 42, 0.1);
+    --altura-card-compromisso: 380px;
+    --altura-card-pessoa: 140px;
+    --largura-formulario: 760px;
+    --fonte-principal: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
