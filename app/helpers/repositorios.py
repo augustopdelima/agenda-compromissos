@@ -1,6 +1,7 @@
 from flask import abort, current_app, g
 
 from models.compromisso import Compromisso
+from models.pessoa import Pessoa
 from repositories.compromisso_repository import CompromissoRepository
 from repositories.pessoa_repository import PessoaRepository
 
@@ -22,3 +23,10 @@ def obter_compromisso_ou_404(id: str) -> Compromisso:
     if compromisso is None:
         abort(404)
     return compromisso
+
+
+def obter_pessoa_ou_404(id: str) -> Pessoa:
+    pessoa = obter_pessoa_repository().buscar_por_id(id)
+    if pessoa is None:
+        abort(404)
+    return pessoa

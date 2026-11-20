@@ -14,6 +14,7 @@ from helpers.repositorios import (
     obter_pessoa_repository,
 )
 from models.compromisso import Compromisso
+from models.pessoa import Pessoa
 
 
 def renderizar_index(
@@ -59,6 +60,23 @@ def renderizar_edicao(
             )
         ),
         hoje=date.today().isoformat(),
+    ), codigo_status
+
+
+def renderizar_edicao_pessoa(
+    pessoa: Pessoa,
+    formulario: dict,
+    erros: dict | None = None,
+    codigo_status: int = 200,
+):
+    return render_template(
+        "pessoas/editar.html",
+        pessoa=pessoa,
+        erros=erros or {},
+        formulario=formulario,
+        url_cancelar=obter_url_retorno(
+            obter_url_cancelar(url_for("pessoas.index"))
+        ),
     ), codigo_status
 
 

@@ -18,6 +18,13 @@ class PessoaRepository:
         cursor = self.colecao.find().sort("nome", 1)
         return [Pessoa.from_dict(doc) for doc in cursor]
 
+    def buscar_por_id(self, id: str) -> Pessoa | None:
+        if not ObjectId.is_valid(id):
+            return None
+
+        documento = self.colecao.find_one({"_id": ObjectId(id)})
+        return Pessoa.from_dict(documento)
+
     def buscar_por_ids(self, ids: list) -> list[Pessoa]:
         if not ids:
             return []
@@ -30,3 +37,13 @@ class PessoaRepository:
     def buscar_por_email(self, email:str) -> Pessoa | None:
         doc = self.colecao.find_one({"email": email.strip().lower()})
         return Pessoa.from_dict(doc)
+
+    def atualizar(self, id: str, dados: dict) -> bool:
+        if not ObjectId.is_valid(id) or not dados:
+            return False
+
+        resultado = self.colecao.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": dados},
+        )
+        return resultado.matched_count > 0

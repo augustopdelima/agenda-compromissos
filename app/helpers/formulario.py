@@ -33,9 +33,11 @@ def obter_dados_formulario() -> dict:
     }
 
 
-def obter_dados_edicao() -> dict:
+def obter_dados_edicao(campos: tuple | None = None) -> dict:
+    """Lê apenas os campos permitidos que foram efetivamente enviados."""
+    campos = campos or CompromissoValidador.CAMPOS_EDICAO
     return {
         campo: request.form[campo]
-        for campo in CompromissoValidador.CAMPOS_EDICAO
+        for campo in campos
         if campo in request.form
     }
