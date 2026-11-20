@@ -1,0 +1,330 @@
+/* Formulários, campos, botões e mensagens de validação */
+
+/* Resumo de erros no topo dos formulários */
+.resumo-erros {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    background-color: var(--cor-erro-suave);
+    border: 1px solid var(--cor-erro);
+    border-radius: var(--raio-md);
+    color: var(--cor-erro-texto);
+}
+
+.resumo-erros:focus {
+    outline: 3px solid rgba(220, 38, 38, 0.25);
+    outline-offset: 2px;
+}
+
+.resumo-erros p {
+    margin: 0 0 0.5rem;
+}
+
+.resumo-erros ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.resumo-erros a {
+    color: inherit;
+    font-weight: 600;
+}
+
+/* Formulários centralizados no conteúdo */
+details.formulario-colapsavel {
+    margin-top: 1.5rem;
+}
+
+details.formulario-colapsavel > summary {
+    list-style: none;
+}
+
+details.formulario-colapsavel > summary::-webkit-details-marker {
+    display: none;
+}
+
+details.formulario-colapsavel > summary::before {
+    content: "+";
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+details.formulario-colapsavel[open] > summary::before {
+    content: "−";
+}
+
+details.formulario-colapsavel > .formulario {
+    margin-top: 1rem;
+}
+
+.formulario {
+    width: 100%;
+    margin: 1.5rem 0 0;
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    overflow: hidden;
+    box-shadow: var(--sombra-md);
+}
+
+.formulario__cabecalho {
+    /* Alinha o título com os campos, que ficam centralizados em --largura-formulario */
+    padding: 1.25rem max(
+        1.75rem,
+        calc((100% - var(--largura-formulario)) / 2 + 1.75rem)
+    );
+    background: linear-gradient(135deg, var(--cor-primaria-suave), var(--cor-superficie-2));
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.conteudo .formulario__titulo {
+    margin: 0;
+    font-size: 1.1rem;
+    text-align: left;
+}
+
+.formulario__descricao {
+    margin: 0.3rem 0 0;
+    color: var(--cor-texto-suave);
+    font-size: 0.85rem;
+}
+
+.formulario__corpo {
+    display: grid;
+    gap: 1.1rem;
+    width: 100%;
+    max-width: var(--largura-formulario);
+    margin: 0 auto;
+    padding: 1.5rem 1.75rem 2.75rem;
+}
+
+.formulario__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 1.1rem;
+}
+
+.grupo-campo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+fieldset.grupo-campo {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+legend {
+    padding: 0;
+    margin-bottom: var(--espaco-1);
+    font-weight: 600;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.campo-ajuda {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--cor-texto-suave);
+    font-size: 0.8rem;
+}
+
+/* Quando vem depois do controle, não empurra os campos ao lado para baixo */
+input + .campo-ajuda,
+textarea + .campo-ajuda {
+    margin-top: 0.35rem;
+    margin-bottom: 0;
+}
+
+.campo-opcional {
+    color: var(--cor-texto-suave);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="datetime-local"],
+textarea {
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--cor-borda-forte);
+    border-radius: var(--raio-md);
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--cor-destaque);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+input.invalido,
+textarea.invalido {
+    border-color: var(--cor-erro);
+}
+
+.texto-erro {
+    color: var(--cor-erro);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Seleção de pessoas: cards com rolagem para muitos envolvidos */
+.selecao-pessoas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    gap: 0.5rem;
+    max-height: 11rem;
+    overflow-y: auto;
+    padding: 0.15rem;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.opcao-pessoa {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0.5rem 0.65rem;
+    background-color: var(--cor-superficie-2);
+    border: 1px solid var(--cor-borda-suave);
+    border-radius: var(--raio-md);
+    font-weight: normal;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.opcao-pessoa:hover {
+    background-color: var(--cor-primaria-suave);
+    border-color: var(--cor-primaria-borda);
+}
+
+.opcao-pessoa input {
+    width: auto;
+    accent-color: var(--cor-destaque);
+}
+
+.opcao-pessoa__dados {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.opcao-pessoa__dados strong,
+.opcao-pessoa__dados small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.opcao-pessoa__dados strong {
+    font-size: 0.85rem;
+}
+
+.opcao-pessoa__dados small {
+    color: var(--cor-texto-suave);
+    font-size: 0.72rem;
+    font-weight: normal;
+}
+
+button {
+    font-family: inherit;
+    background-color: var(--cor-destaque);
+    color: var(--cor-superficie);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--raio-sm);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--cor-destaque-hover);
+}
+
+button.esta-salvando {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.botao {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: var(--raio-md);
+    background: linear-gradient(90deg, var(--cor-destaque), #3b82f6);
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.botao:hover {
+    background: linear-gradient(90deg, var(--cor-destaque-hover), var(--cor-destaque));
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+    transform: translateY(-1px);
+}
+
+/* Dados fixos e ações no formulário de edição */
+.formulario__info {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.9rem 1rem;
+    background-color: var(--cor-superficie-2);
+    border: 1px solid var(--cor-borda-suave);
+    border-radius: var(--raio-md);
+}
+
+.formulario__info p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.formulario__info small {
+    color: var(--cor-texto-suave);
+    font-size: 0.78rem;
+}
+
+.formulario__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.formulario__acoes .botao {
+    flex: 1 1 220px;
+    width: auto;
+}
+
+.botao-cancelar {
+    flex: 0 1 auto;
+    padding: 0.8rem 1.2rem;
+    background-color: var(--cor-superficie);
+    border: 1px solid var(--cor-borda-forte);
+    border-radius: var(--raio-md);
+    color: var(--cor-texto);
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.botao-cancelar:hover {
+    background-color: var(--cor-superficie-3);
+    border-color: var(--cor-texto-suave);
+}

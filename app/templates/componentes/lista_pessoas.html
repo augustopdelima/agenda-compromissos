@@ -1,3 +1,5 @@
+{% from "componentes/confirmar_acao.html" import confirmar_acao %}
+
 <div class="lista-pessoas">
     {% for pessoa in pessoas %}
         <article class="pessoa-card">
@@ -9,8 +11,28 @@
                     {{ pessoa.email }}
                 </small>
             </div>
+
+            <div class="pessoa-card__acoes">
+                <a class="botao-editar"
+                   href="{{ url_for('pessoas.editar', id=pessoa.id) }}"
+                   aria-label="Editar {{ pessoa.nome }}">
+                    Editar
+                </a>
+                {{ confirmar_acao(
+                    url_for('pessoas.excluir', id=pessoa.id),
+                    'A pessoa "' ~ pessoa.nome ~ '" será removida e deixará de aparecer nos compromissos vinculados.',
+                    'excluir-pessoa-' ~ pessoa.id,
+                    titulo='Excluir pessoa?',
+                    rotulo='Excluir pessoa'
+                ) }}
+            </div>
         </article>
     {% else %}
-        <p class="estado-vazio">Nenhuma pessoa cadastrada ainda.</p>
+        <p class="estado-vazio">
+            Nenhuma pessoa cadastrada ainda.
+            <a class="botao-acao" href="{{ url_for('pessoas.index') }}#nova-pessoa">
+                Cadastrar pessoa
+            </a>
+        </p>
     {% endfor %}
 </div>

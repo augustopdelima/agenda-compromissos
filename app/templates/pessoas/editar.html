@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar pessoa — Agenda de Compromissos{% endblock %}
+
+{% block conteudo %}
+    <h1>Editar pessoa</h1>
+
+    <form class="formulario"
+          id="formulario-editar"
+          action="{{ url_for('pessoas.atualizar', id=pessoa.id) }}"
+          method="POST"
+          novalidate>
+        <input type="hidden" name="url_retorno" value="{{ url_cancelar }}">
+
+        <div class="formulario__cabecalho">
+            <h2 class="formulario__titulo">Alterar nome e e-mail</h2>
+            <p class="formulario__descricao">
+                O e-mail precisa ser único na agenda. Os compromissos envolvidos
+                permanecem inalterados.
+            </p>
+        </div>
+
+        <div class="formulario__corpo">
+            {% if erros %}
+                <div class="resumo-erros" role="alert" tabindex="-1">
+                    <p><strong>Não foi possível salvar.</strong> Confira os campos abaixo:</p>
+                    <ul>
+                        {% for campo, mensagem in erros.items() %}
+                            <li>
+                                <a href="#{{ campo if campo in ['nome', 'email'] else 'formulario-editar' }}">
+                                    {{ mensagem }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="formulario__grid">
+                <div class="grupo-campo">
+                    <label for="nome">Nome</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        value="{{ formulario.get('nome', pessoa.nome) }}"
+                        aria-describedby="{{ 'nome-erro' if erros.get('nome') else '' }}"
+                        aria-invalid="{{ 'true' if erros.get('nome') else 'false' }}"
+                        class="{{ 'invalido' if erros.get('nome') else '' }}"
+                    >
+                    {% if erros.get('nome') %}
+                        <span class="texto-erro" id="nome-erro" role="alert">
+                            {{ erros.get('nome') }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="grupo-campo">
+                    <label for="email">E-mail</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ formulario.get('email', pessoa.email) }}"
+                        aria-describedby="{{ 'email-erro' if erros.get('email') else '' }}"
+                        aria-invalid="{{ 'true' if erros.get('email') else 'false' }}"
+                        class="{{ 'invalido' if erros.get('email') else '' }}"
+                    >
+                    {% if erros.get('email') %}
+                        <span class="texto-erro" id="email-erro" role="alert">
+                            {{ erros.get('email') }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="formulario__acoes">
+                <button type="submit" class="botao">Salvar alterações</button>
+                <a class="botao-cancelar" href="{{ url_cancelar }}">Cancelar</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -9,6 +9,7 @@ from controllers.home_controller import home_controller
 
 def iniciar_app():
     app = Flask(__name__)
+    app.secret_key = os.environ.get("SECRET_KEY") or "dev-secret-alterar-em-producao"
 
     client = MongoClient(os.environ["MONGO_URI"])
     app.db = client[os.environ["MONGO_DATABASE"]]

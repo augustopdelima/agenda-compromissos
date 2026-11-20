@@ -1,17 +1,20 @@
 <aside class="menu">
     <h2>Agenda</h2>
 
-    <nav>
+    <nav aria-label="Navegação principal">
         <a href="{{ url_for('home.index') }}"
-           class="{{ 'ativo' if request.endpoint == 'home.index' else '' }}">
+           class="{{ 'ativo' if request.endpoint == 'home.index' else '' }}"
+           {% if request.endpoint == 'home.index' %}aria-current="page"{% endif %}>
             Home
         </a>
         <a href="{{ url_for('compromisso.index') }}"
-           class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('compromisso.') else '' }}">
+           class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('compromisso.') else '' }}"
+           {% if request.endpoint and request.endpoint.startswith('compromisso.') %}aria-current="page"{% endif %}>
             Compromissos
         </a>
         <a href="{{ url_for('pessoas.index') }}"
-           class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('pessoas.') else '' }}">
+           class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('pessoas.') else '' }}"
+           {% if request.endpoint and request.endpoint.startswith('pessoas.') %}aria-current="page"{% endif %}>
             Pessoas
         </a>
     </nav>

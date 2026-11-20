@@ -1,0 +1,17 @@
+<nav class="filtros" aria-label="Filtrar compromissos por período">
+    <a class="filtro {{ 'ativo' if periodo == 'todos' else '' }}"
+       href="{{ url_for(request.endpoint, periodo='todos') }}"
+       {% if periodo == 'todos' %}aria-current="page"{% endif %}>
+        Todos
+    </a>
+    <a class="filtro {{ 'ativo' if periodo == 'proximos' else '' }}"
+       href="{{ url_for(request.endpoint, periodo='proximos') }}"
+       {% if periodo == 'proximos' %}aria-current="page"{% endif %}>
+        Futuros
+    </a>
+    <a class="filtro {{ 'ativo' if periodo == 'passados' else '' }}"
+       href="{{ url_for(request.endpoint, periodo='passados') }}"
+       {% if periodo == 'passados' %}aria-current="page"{% endif %}>
+        Antigos
+    </a>
+</nav>

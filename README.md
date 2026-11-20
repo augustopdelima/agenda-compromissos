@@ -13,24 +13,46 @@ Agenda de compromissos com data/horário, título, descrição e pessoas envolvi
 ### Pessoas
 - [x] Cadastrar pessoa (nome + e-mail, com e-mail único)
 - [x] Listar pessoas
+- [x] Editar nome e e-mail da pessoa (mantendo a unicidade do e-mail)
+- [x] Excluir pessoa com confirmação (remove seu id dos compromissos vinculados)
 
 ### Agenda (compromissos)
 - [x] Listar compromissos
 - [x] Cadastrar novo compromisso
+- [x] Visualizar detalhes do compromisso (título, descrição, data/horário e pessoas)
+- [x] Clicar em qualquer área do card para abrir os detalhes
+- [x] Filtrar a listagem por **Todos**, **Futuros** e **Antigos** (padrão: Todos)
 - [x] Alterar título e descrição de um compromisso
 - [x] Alterar as pessoas envolvidas em um compromisso
 - [x] Excluir uma pessoa de um compromisso
-- [x] Excluir um compromisso
+- [x] Excluir um compromisso com confirmação
+- [x] Mensagens de sucesso ao salvar e excluir
+
+### Interface
+- [x] Layout responsivo: menu lateral no desktop e horizontal no mobile
+- [x] Formulários de cadastro recolhidos em `<details>` (abrem sozinhos quando há erro ou via `#hash`)
+- [x] Cards com descrição resumida ("ver mais") e no máximo 3 pessoas exibidas (`+N`)
+- [x] Modal de confirmação para exclusão, acessível por teclado
+- [x] Estados vazios centralizados, com atalho para cadastro
+- [x] Cancelar ou salvar em formulários de edição retorna à página de origem
+- [x] Skip link, foco visível e `aria-current` na navegação
 
 ## Estrutura do projeto
 
 ```
 app/
-├── app.py                          # Inicialização e registro dos blueprints
+├── app.py                          # Inicialização, SECRET_KEY e blueprints
 ├── controllers/                    # Rotas da aplicação
 │   ├── home_controller.py
 │   ├── pessoa_controller.py
 │   └── compromisso_controller.py
+├── helpers/                        # Funções auxiliares compartilhadas
+│   ├── __init__.py
+│   ├── periodo.py                  # Períodos e filtragem da listagem
+│   ├── repositorios.py             # Repositórios em g e busca por id
+│   ├── compromissos.py             # Agrupa compromissos com suas pessoas
+│   ├── formulario.py               # Leitura do form e URLs de retorno
+│   └── renderizacao.py             # Renderização dos templates da aplicação
 ├── models/                         # Entidades de domínio
 │   ├── pessoa.py
 │   └── compromisso.py
@@ -41,7 +63,13 @@ app/
 │   ├── pessoa_validator.py
 │   └── compromisso_validator.py
 ├── static/
-│   └── style.css
+│   ├── style.css                   # Arquivo legado, não carregado
+│   └── css/                        # CSS dividido por responsabilidade
+│       ├── tokens.css              # Cores, espaçamentos, raios e sombras
+│       ├── base.css                # Reset, layout, menu e alertas
+│       ├── formularios.css         # Campos, botões e mensagens de erro
+│       ├── componentes.css         # Filtros, cards, modal e estados vazios
+│       └── responsivo.css          # Breakpoints (carregado por último)
 └── templates/                      # Templates Jinja2
     ├── base.html
     ├── index.html
@@ -49,19 +77,31 @@ app/
     ├── componentes/
     │   ├── aside.html
     │   ├── confirmar_acao.html
+    │   ├── filtros_periodo.html
     │   ├── lista_compromissos.html
     │   └── lista_pessoas.html
     ├── compromissos/
     │   ├── index.html
+    │   ├── detalhes.html
     │   ├── editar.html
     │   └── pessoas.html
     └── pessoas/
-        └── index.html
+        ├── index.html
+        └── editar.html
+tests/                              # Testes unitários e de rotas (unittest)
+├── base.py                         # Banco em memória e app de teste
+├── test_app_config.py
+├── test_assets.py
+├── test_helpers.py
+├── test_models.py
+├── test_repositories.py
+├── test_routes.py
+└── test_validators.py
 ```
 
-**Camadas:** controller → validator → repository → model. As rotas ficam nos controllers, a validação fica isolada no validator e o acesso ao banco fica nos repositories.
+**Camadas:** controller → helpers → validator → repository → model. Os controllers ficam apenas com as rotas; os helpers concentram filtros, acesso a repositórios, leitura de formulários e renderização. A validação fica isolada no validator e o acesso ao banco nos repositories.
 
-**Referências de pessoas:** o documento do compromisso guarda apenas os ids das pessoas envolvidas, como strings. Não há exclusão em cascata: excluir uma pessoa do cadastro não altera compromissos, e ids que não correspondem mais a nenhuma pessoa cadastrada são ignorados na exibição e deixam de existir quando a lista é salva. Tanto o cadastro quanto a edição permitem lista vazia; basta não selecionar ninguém. A edição substitui a lista inteira.
+**Referências de pessoas:** o documento do compromisso guarda apenas os ids das pessoas envolvidas, como strings. Ao excluir uma pessoa, seu id é removido de todos os compromissos vinculados — os compromissos em si permanecem. Ids que por algum motivo não correspondem mais a nenhuma pessoa cadastrada são ignorados na exibição. Tanto o cadastro quanto a edição permitem lista vazia; basta não selecionar ninguém. A edição substitui a lista inteira.
 
 ## Variáveis de ambiente
 
@@ -72,8 +112,9 @@ Copie o `.env.example` para `.env` e ajuste os valores:
 | `MONGO_ROOT_USERNAME`  | Usuário root do MongoDB                      |
 | `MONGO_ROOT_PASSWORD`  | Senha do usuário root do MongoDB             |
 | `MONGO_DATABASE`       | Nome do banco de dados                       |
+| `SECRET_KEY`           | Chave usada pelo Flask para as mensagens `flash()` |
 
-O app consome internamente `MONGO_URI` (montada pelo Compose a partir do usuário/senha) e `MONGO_DATABASE`.
+O app consome internamente `MONGO_URI` (montada pelo Compose a partir do usuário/senha) e `MONGO_DATABASE`. Se `SECRET_KEY` não estiver definida, o app usa uma chave apenas para desenvolvimento — defina um valor próprio em produção.
 
 ## Como rodar
 
@@ -91,7 +132,7 @@ Pré-requisitos: [Docker](https://docs.docker.com/get-docker/) com o plugin Comp
    docker compose up --build
    ```
 
-3. Acesse em <http://localhost:5000/pessoas>.
+3. Acesse a visão geral em <http://localhost:5000/>.
 
 O código em `app/` é montado como volume no container, então alterações aparecem automaticamente (o Flask roda em modo debug). O MongoDB persiste os dados no volume `mongodb_data`.
 
@@ -111,7 +152,7 @@ O código em `app/` é montado como volume no container, então alterações apa
    docker compose up --build
    ```
 
-4. Acesse em <http://localhost:5000/pessoas>.
+4. Acesse a visão geral em <http://localhost:5000/>.
 
 > **Sem Docker (opcional):** é necessário ter o [Python 3.15](https://www.python.org/downloads/windows/) instalado (marcando a opção "Add Python to PATH" no instalador) e um MongoDB rodando localmente na porta 27017.
 >
@@ -142,20 +183,52 @@ export MONGO_DATABASE="mongo_database"
 flask --app app:iniciar_app run --debug
 ```
 
+Nos exemplos sem Docker, defina também `SECRET_KEY` (`export SECRET_KEY="sua-chave"` no Linux/macOS ou `$env:SECRET_KEY = "sua-chave"` no PowerShell) para substituir a chave de desenvolvimento padrão.
+
+## Testes
+
+A suíte usa apenas `unittest` (já incluído no Python) e um banco em memória que simula as operações do PyMongo usadas pela aplicação. Não é preciso subir o MongoDB nem instalar pacotes extras.
+
+Rodando na imagem do projeto (recomendado — já contém Flask e PyMongo):
+
+```bash
+docker run --rm -v "$PWD":/workspace -w /workspace \
+  --entrypoint python agenda-compromissos-app:latest \
+  -m unittest discover -s tests -v
+```
+
+Se a imagem ainda não existir, construa-a antes com `docker build -t agenda-compromissos-app .`.
+
+Com as dependências instaladas localmente (`pip install -r requirements.txt`):
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Os testes cobrem modelos, validadores, helpers, rotas e templates (filtros, detalhes, mensagens flash, retorno à página de origem e estados vazios), configuração da aplicação e estrutura do CSS.
+
 ## Endpoints
 
 | Método | Rota | Descrição |
 | ------ | ---- | --------- |
-| GET | `/` | Home com listagem de compromissos |
+| GET | `/` | Visão geral com resumo e listagem filtrável de compromissos |
 | GET | `/pessoas` | Listagem + formulário de cadastro de pessoas |
 | POST | `/pessoas/criar` | Cadastra uma nova pessoa |
+| GET | `/pessoas/<id>/editar` | Formulário de nome e e-mail da pessoa |
+| POST | `/pessoas/<id>/editar` | Salva nome e/ou e-mail da pessoa |
+| POST | `/pessoas/<id>/excluir` | Exclui uma pessoa e remove seu id dos compromissos |
 | GET | `/compromissos` | Listagem + formulário de cadastro de compromissos |
 | POST | `/compromissos/criar` | Cadastra um novo compromisso |
+| GET | `/compromissos/<id>` | Detalhes do compromisso (título, descrição, horário e pessoas) |
 | GET | `/compromissos/<id>/editar` | Formulário de título e descrição |
 | POST | `/compromissos/<id>/editar` | Salva título e descrição |
 | GET | `/compromissos/<id>/pessoas` | Gerencia as pessoas envolvidas |
 | POST | `/compromissos/<id>/pessoas` | Substitui a lista de envolvidas |
 | POST | `/compromissos/<id>/excluir` | Exclui um compromisso |
+
+As listagens de compromissos aceitam `?periodo=todos|proximos|passados`. O padrão é `todos`, e os rótulos exibidos são **Todos**, **Futuros** e **Antigos**, respectivamente.
+
+Os formulários de edição (compromisso e pessoa) guardam a página de origem no campo oculto `url_retorno` e voltam para ela ao salvar ou cancelar. Na edição de pessoa, como não existe página de detalhes, o fallback é `/pessoas`. Alterar o e-mail preserva os compromissos vinculados, pois eles referenciam a pessoa pelo id.
 
 ## Roadmap
 

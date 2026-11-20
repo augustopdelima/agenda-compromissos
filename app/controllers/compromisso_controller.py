@@ -1,116 +1,25 @@
-from flask import Blueprint, g, current_app, request, render_template, redirect, url_for, abort
+from flask import Blueprint, flash, redirect, request, url_for
+
+from helpers.formulario import (
+    obter_dados_edicao,
+    obter_dados_formulario,
+    obter_url_retorno,
+)
+from helpers.renderizacao import (
+    renderizar_detalhes,
+    renderizar_edicao,
+    renderizar_index,
+    renderizar_pessoas,
+)
+from helpers.repositorios import (
+    obter_compromisso_ou_404,
+    obter_compromisso_repository,
+    obter_pessoa_repository,
+)
 from models.compromisso import Compromisso
-from repositories.compromisso_repository import CompromissoRepository
-from repositories.pessoa_repository import PessoaRepository
 from validators.compromisso_validator import CompromissoValidador
 
 compromisso_controller = Blueprint("compromisso", __name__)
-
-
-def obter_compromisso_repository() -> CompromissoRepository:
-    if "compromisso_repository" not in g:
-        g.compromisso_repository = CompromissoRepository(current_app.db)
-    return g.compromisso_repository
-
-
-def obter_pessoa_repository() -> PessoaRepository:
-    if "pessoa_repository" not in g:
-        g.pessoa_repository = PessoaRepository(current_app.db)
-    return g.pessoa_repository
-
-
-def obter_compromisso_ou_404(id: str) -> Compromisso:
-    compromisso = obter_compromisso_repository().buscar_por_id(id)
-    if compromisso is None:
-        abort(404)
-    return compromisso
-
-
-def montar_compromissos_com_pessoas(compromissos: list) -> list[dict]:
-    ids_pessoas = [
-        id_pessoa
-        for compromisso in compromissos
-        for id_pessoa in compromisso.pessoas
-    ]
-
-    pessoas = obter_pessoa_repository().buscar_por_ids(ids_pessoas)
-    pessoas_por_id = {pessoa.id: pessoa for pessoa in pessoas}
-
-    return [
-        {
-            "compromisso": compromisso,
-            "pessoas": [
-                pessoas_por_id[id_pessoa]
-                for id_pessoa in compromisso.pessoas
-                if id_pessoa in pessoas_por_id
-            ]
-        }
-        for compromisso in compromissos
-    ]
-
-
-def obter_dados_formulario() -> dict:
-    return {
-        "data_horario": request.form.get("data_horario", ""),
-        "titulo": request.form.get("titulo", ""),
-        "descricao": request.form.get("descricao", ""),
-        "pessoas": request.form.getlist("pessoas"),
-    }
-
-
-def obter_dados_edicao() -> dict:
-    return {
-        campo: request.form[campo]
-        for campo in CompromissoValidador.CAMPOS_EDICAO
-        if campo in request.form
-    }
-
-
-def renderizar_index(erros: dict | None = None, formulario: dict | None = None, codigo_status: int = 200):
-    compromissos = obter_compromisso_repository().buscar_todos()
-    pessoas = obter_pessoa_repository().buscar_todos()
-
-    return render_template(
-        "compromissos/index.html",
-        compromissos=montar_compromissos_com_pessoas(compromissos),
-        pessoas=pessoas,
-        erros=erros or {},
-        formulario=formulario or {},
-    ), codigo_status
-
-
-def renderizar_edicao(
-    compromisso: Compromisso,
-    formulario: dict,
-    erros: dict | None = None,
-    codigo_status: int = 200,
-):
-    pessoas = montar_compromissos_com_pessoas([compromisso])[0]["pessoas"]
-
-    return render_template(
-        "compromissos/editar.html",
-        compromisso=compromisso,
-        pessoas=pessoas,
-        erros=erros or {},
-        formulario=formulario,
-    ), codigo_status
-
-
-def renderizar_pessoas(
-    compromisso: Compromisso,
-    formulario: dict,
-    erros: dict | None = None,
-    codigo_status: int = 200,
-):
-    pessoas = obter_pessoa_repository().buscar_todos()
-
-    return render_template(
-        "compromissos/pessoas.html",
-        compromisso=compromisso,
-        pessoas=pessoas,
-        formulario=formulario,
-        erros=erros or {},
-    ), codigo_status
 
 
 @compromisso_controller.route("/", methods=["GET"], strict_slashes=False)
@@ -127,7 +36,14 @@ def criar():
         return renderizar_index(validator.erros, formulario, 400)
 
     obter_compromisso_repository().criar(Compromisso(**validator.dados_limpos))
+    flash("Compromisso cadastrado com sucesso.", "success")
     return redirect(url_for("compromisso.index"))
+
+
+@compromisso_controller.route("/<id>", methods=["GET"])
+def detalhes(id):
+    compromisso = obter_compromisso_ou_404(id)
+    return renderizar_detalhes(compromisso)
 
 
 @compromisso_controller.route("/<id>/editar", methods=["GET"])
@@ -148,13 +64,17 @@ def atualizar(id):
     obter_compromisso_repository().atualizar_titulo_descricao(
         id, validator.dados_limpos
     )
-    return redirect(url_for("compromisso.index"))
+    flash("Compromisso atualizado com sucesso.", "success")
+    return redirect(
+        obter_url_retorno(url_for("compromisso.detalhes", id=id))
+    )
 
 
 @compromisso_controller.route("/<id>/excluir", methods=["POST"])
 def excluir(id):
     obter_compromisso_ou_404(id)
     obter_compromisso_repository().excluir(id)
+    flash("Compromisso excluído com sucesso.", "success")
     return redirect(url_for("compromisso.index"))
 
 
@@ -180,4 +100,7 @@ def atualizar_pessoas(id):
     obter_compromisso_repository().atualizar_pessoas(
         id, validator.dados_limpos["pessoas"]
     )
-    return redirect(url_for("compromisso.index"))
+    flash("Pessoas envolvidas atualizadas com sucesso.", "success")
+    return redirect(
+        obter_url_retorno(url_for("compromisso.detalhes", id=id))
+    )

@@ -1,11 +1,42 @@
 {% extends "base.html" %}
 
-{% block titulo %}Home — Agenda de Compromissos{% endblock %}
+{% block titulo %}Visão geral — Agenda de Compromissos{% endblock %}
 
 {% block conteudo %}
-    <h1>Home</h1>
+    <div class="cabecalho-pagina">
+        <h1>Visão geral</h1>
+        <a class="botao-acao" href="{{ url_for('compromisso.index') }}#novo-compromisso">
+            + Novo compromisso
+        </a>
+    </div>
 
-    <h2>Compromissos cadastrados</h2>
+    <section class="resumo" aria-label="Resumo da agenda">
+        <div class="resumo-card">
+            <span class="resumo-card__valor">{{ resumo.proximos_7 }}</span>
+            <span class="resumo-card__rotulo">Próximos 7 dias</span>
+        </div>
+        <div class="resumo-card">
+            <span class="resumo-card__valor">{{ resumo.total }}</span>
+            <span class="resumo-card__rotulo">Total de compromissos</span>
+        </div>
+        <div class="resumo-card">
+            <span class="resumo-card__valor">{{ resumo.sem_pessoas }}</span>
+            <span class="resumo-card__rotulo">Sem pessoas vinculadas</span>
+        </div>
+    </section>
+
+    {% include "componentes/filtros_periodo.html" %}
+
+    <h2>{{ titulo_lista }}</h2>
 
     {% include "componentes/lista_compromissos.html" %}
+
+    <div class="home-atalhos">
+        <a class="botao-acao" href="{{ url_for('pessoas.index') }}#nova-pessoa">
+            Cadastrar pessoa
+        </a>
+        <a class="botao-acao" href="{{ url_for('compromisso.index', periodo='todos') }}">
+            Ver todos os compromissos
+        </a>
+    </div>
 {% endblock %}

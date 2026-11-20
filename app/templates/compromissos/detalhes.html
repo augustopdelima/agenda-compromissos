@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% from "componentes/confirmar_acao.html" import confirmar_acao %}
+
+{% block titulo %}{{ compromisso.titulo }} — Agenda de Compromissos{% endblock %}
+
+{% block conteudo %}
+    <div class="cabecalho-pagina">
+        <div>
+            <a class="voltar" href="{{ url_for('compromisso.index') }}">
+                ← Voltar aos compromissos
+            </a>
+            <h1>{{ compromisso.titulo }}</h1>
+        </div>
+    </div>
+
+    <article class="detalhes">
+        <dl class="detalhes__lista">
+            <div class="detalhes__item">
+                <dt>Data e horário</dt>
+                <dd class="detalhes__data">
+                    {{ compromisso.data_horario.strftime("%d/%m/%Y %H:%M") }}
+                </dd>
+            </div>
+
+            <div class="detalhes__item">
+                <dt>Descrição</dt>
+                <dd class="detalhes__descricao">
+                    {{ compromisso.descricao or "Nenhuma descrição informada." }}
+                </dd>
+            </div>
+
+            <div class="detalhes__item">
+                <dt>Pessoas envolvidas ({{ pessoas|length }})</dt>
+                <dd>
+                    {% if pessoas %}
+                        <ul class="detalhes__pessoas">
+                            {% for pessoa in pessoas %}
+                                <li class="detalhes__pessoa"
+                                    data-inicial="{{ pessoa.nome[:1]|upper }}">
+                                    <span class="detalhes__pessoa-dados">
+                                        <strong>{{ pessoa.nome }}</strong>
+                                        <small>{{ pessoa.email }}</small>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="detalhes__sem-pessoas">
+                            Nenhuma pessoa vinculada a este compromisso.
+                        </p>
+                    {% endif %}
+                </dd>
+            </div>
+        </dl>
+
+        <div class="detalhes__acoes">
+            <a class="botao-editar"
+               href="{{ url_for('compromisso.editar', id=compromisso.id) }}">
+                Editar
+            </a>
+            <a class="botao-pessoas"
+               href="{{ url_for('compromisso.gerenciar_pessoas', id=compromisso.id) }}">
+                Gerenciar pessoas
+            </a>
+            {{ confirmar_acao(
+                url_for('compromisso.excluir', id=compromisso.id),
+                'O compromisso "' ~ compromisso.titulo ~ '" será removido. As pessoas cadastradas não serão afetadas.',
+                'excluir-detalhes-' ~ compromisso.id
+            ) }}
+        </div>
+    </article>
+{% endblock %}

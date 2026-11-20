@@ -9,45 +9,79 @@
                 {{ compromisso.data_horario.strftime("%d/%m/%Y %H:%M") }}
             </span>
 
-            <h3 class="compromisso-card__titulo">{{ compromisso.titulo }}</h3>
+            {% if compromisso.data_horario.strftime("%Y-%m-%d") == hoje|default('') %}
+                <span class="compromisso-card__badge">Hoje</span>
+            {% endif %}
 
-            <p class="compromisso-card__descricao">{{ compromisso.descricao }}</p>
+            <h3 class="compromisso-card__titulo" title="{{ compromisso.titulo }}">
+                <a class="compromisso-card__link"
+                   href="{{ url_for('compromisso.detalhes', id=compromisso.id) }}">
+                    {{ compromisso.titulo }}
+                </a>
+            </h3>
 
-            <div class="compromisso-card__pessoas-block">
-                <h4 class="compromisso-card__rotulo">
-                    Pessoas envolvidas ({{ item.pessoas|length }})
-                </h4>
-
-                {% if item.pessoas %}
-                    <ul class="compromisso-card__pessoas">
-                        {% for pessoa in item.pessoas %}
-                            <li class="compromisso-card__pessoa"
-                                data-inicial="{{ pessoa.nome[:1]|upper }}">
-                                <span class="compromisso-card__pessoa-dados">
-                                    <strong>{{ pessoa.nome }}</strong>
-                                    <small>{{ pessoa.email }}</small>
-                                </span>
-                            </li>
-                        {% endfor %}
-                    </ul>
+            <div class="compromisso-card__corpo">
+                {% if compromisso.descricao %}
+                    <details class="compromisso-card__descricao-detalhes">
+                        <summary>
+                            <span class="compromisso-card__descricao">{{ compromisso.descricao }}</span>
+                            <span class="compromisso-card__ver-mais-texto">ver mais</span>
+                        </summary>
+                    </details>
                 {% else %}
-                    <p class="compromisso-card__sem-pessoas">Sem pessoas envolvidas.</p>
+                    <p class="compromisso-card__descricao"></p>
                 {% endif %}
+
+                <div class="compromisso-card__pessoas-block">
+                    <h4 class="compromisso-card__rotulo">
+                        Pessoas envolvidas ({{ item.pessoas|length }})
+                    </h4>
+
+                    {% if item.pessoas %}
+                        <ul class="compromisso-card__pessoas">
+                            {% for pessoa in item.pessoas[:3] %}
+                                <li class="compromisso-card__pessoa"
+                                    data-inicial="{{ pessoa.nome[:1]|upper }}">
+                                    <span class="compromisso-card__pessoa-dados">
+                                        <strong>{{ pessoa.nome }}</strong>
+                                        <small>{{ pessoa.email }}</small>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                            {% if item.pessoas|length > 3 %}
+                                <li class="compromisso-card__pessoa-extra">
+                                    +{{ item.pessoas|length - 3 }}
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% else %}
+                        <p class="compromisso-card__sem-pessoas">Sem pessoas envolvidas.</p>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="compromisso-card__acoes">
-                {{ confirmar_acao(url_for('compromisso.excluir', id=compromisso.id), 'Tem certeza que deseja excluir este compromisso?') }}
-                <a class="botao-pessoas"
-                   href="{{ url_for('compromisso.gerenciar_pessoas', id=compromisso.id) }}">
-                    Pessoas
-                </a>
                 <a class="botao-editar"
                    href="{{ url_for('compromisso.editar', id=compromisso.id) }}">
                     Editar
                 </a>
+                <a class="botao-pessoas"
+                   href="{{ url_for('compromisso.gerenciar_pessoas', id=compromisso.id) }}">
+                    Gerenciar pessoas
+                </a>
+                {{ confirmar_acao(
+                    url_for('compromisso.excluir', id=compromisso.id),
+                    'O compromisso "' ~ compromisso.titulo ~ '" será removido. As pessoas cadastradas não serão afetadas.',
+                    'excluir-' ~ compromisso.id
+                ) }}
             </div>
         </article>
     {% else %}
-        <p class="estado-vazio">Nenhum compromisso cadastrado ainda.</p>
+        <p class="estado-vazio">
+            Nenhum compromisso cadastrado neste período.
+            <a class="botao-acao" href="{{ url_for('compromisso.index') }}#novo-compromisso">
+                Cadastrar compromisso
+            </a>
+        </p>
     {% endfor %}
 </div>

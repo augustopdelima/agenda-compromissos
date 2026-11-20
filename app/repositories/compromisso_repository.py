@@ -65,3 +65,14 @@ class CompromissoRepository:
 
         resultado = self.colecao.delete_one({"_id": ObjectId(id)})
         return resultado.deleted_count > 0
+
+    # Ao excluir uma pessoa do cadastro, remove seu id de todos os compromissos.
+    def remover_pessoa_dos_compromissos(self, id_pessoa: str) -> int:
+        if not ObjectId.is_valid(id_pessoa):
+            return 0
+
+        resultado = self.colecao.update_many(
+            {"pessoas": id_pessoa},
+            {"$pull": {"pessoas": id_pessoa}},
+        )
+        return resultado.modified_count
