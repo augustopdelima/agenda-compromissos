@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 
-{% block titulo %}Pessoas envolvidas — Agenda de Compromissos{% endblock %}
+{% block titulo %}Gerenciar pessoas — Agenda de Compromissos{% endblock %}
 
 {% block conteudo %}
-    <h1>Pessoas envolvidas</h1>
+    <h1>Gerenciar pessoas</h1>
 
     <form class="formulario"
           action="{{ url_for('compromisso.atualizar_pessoas', id=compromisso.id) }}"
           method="POST"
           novalidate>
+        <input type="hidden" name="url_retorno" value="{{ url_cancelar }}">
+
         <div class="formulario__cabecalho">
             <h2 class="formulario__titulo">Gerenciar pessoas envolvidas</h2>
             <p class="formulario__descricao">
@@ -19,6 +21,21 @@
         </div>
 
         <div class="formulario__corpo">
+            {% if erros %}
+                <div class="resumo-erros" role="alert" tabindex="-1">
+                    <p><strong>Não foi possível salvar.</strong> Confira os campos abaixo:</p>
+                    <ul>
+                        {% for campo, mensagem in erros.items() %}
+                            <li>
+                                <a href="#{{ campo if campo == 'pessoas' else 'conteudo' }}">
+                                    {{ mensagem }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
             <div class="formulario__info">
                 <p><strong>Compromisso:</strong> {{ compromisso.titulo }}</p>
                 <p><strong>Data/Horário:</strong>
@@ -27,12 +44,15 @@
                 <small>Título, descrição e data/horário permanecem inalterados.</small>
             </div>
 
-            <div class="grupo-campo">
-                <label>Pessoas envolvidas</label>
+            <fieldset class="grupo-campo" id="pessoas">
+                <legend>Pessoas envolvidas</legend>
+                <span class="campo-ajuda" id="pessoas-ajuda">
+                    Você pode deixar a lista vazia e vincular pessoas depois.
+                </span>
 
                 {% set selecionadas = formulario.get('pessoas', compromisso.pessoas) %}
 
-                <div class="selecao-pessoas">
+                <div class="selecao-pessoas" aria-describedby="pessoas-ajuda{% if erros.get('pessoas') %} pessoas-erro{% endif %}">
                     {% for pessoa in pessoas %}
                         <label class="opcao-pessoa">
                             <input
@@ -47,19 +67,23 @@
                             </span>
                         </label>
                     {% else %}
-                        <span class="texto-erro">Cadastre pessoas antes de gerenciar os envolvidos.</span>
+                        <span class="campo-ajuda">
+                            Nenhuma pessoa cadastrada. Você pode cadastrar pessoas depois.
+                        </span>
                     {% endfor %}
                 </div>
 
                 {% if erros.get('pessoas') %}
-                    <span class="texto-erro">{{ erros.get('pessoas') }}</span>
+                    <span class="texto-erro" id="pessoas-erro" role="alert">
+                        {{ erros.get('pessoas') }}
+                    </span>
                 {% endif %}
-            </div>
+            </fieldset>
 
             <div class="formulario__acoes">
                 <button type="submit" class="botao">Salvar pessoas</button>
                 <a class="botao-cancelar"
-                   href="{{ url_for('compromisso.index') }}">Cancelar</a>
+                   href="{{ url_cancelar }}">Cancelar</a>
             </div>
         </div>
     </form>

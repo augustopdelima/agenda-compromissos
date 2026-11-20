@@ -3,89 +3,139 @@
 {% block titulo %}Compromissos — Agenda de Compromissos{% endblock %}
 
 {% block conteudo %}
-    <h1>Compromissos</h1>
+    <div class="cabecalho-pagina">
+        <h1>Compromissos</h1>
+    </div>
 
-    <!-- Formulário de Cadastro -->
-    <form class="formulario" action="{{ url_for('compromisso.criar') }}" method="POST" novalidate>
-        <div class="formulario__cabecalho">
-            <h2 class="formulario__titulo">Novo compromisso</h2>
-            <p class="formulario__descricao">Informe os dados e selecione as pessoas envolvidas.</p>
-        </div>
+    {% include "componentes/filtros_periodo.html" %}
 
-        <div class="formulario__corpo">
-            <div class="formulario__grid">
-                <div class="grupo-campo">
-                    <label for="data_horario">Data/Horário</label>
-                    <input
-                        type="datetime-local"
-                        id="data_horario"
-                        name="data_horario"
-                        value="{{ formulario.get('data_horario', '') }}"
-                        class="{{ 'invalido' if erros.get('data_horario') else '' }}"
-                    >
-                    {% if erros.get('data_horario') %}
-                        <span class="texto-erro">{{ erros.get('data_horario') }}</span>
-                    {% endif %}
-                </div>
+    <details class="formulario-colapsavel" id="novo-compromisso" {% if erros %}open{% endif %}>
+        <summary>Novo compromisso</summary>
 
-                <div class="grupo-campo">
-                    <label for="titulo">Título</label>
-                    <input
-                        type="text"
-                        id="titulo"
-                        name="titulo"
-                        value="{{ formulario.get('titulo', '') }}"
-                        class="{{ 'invalido' if erros.get('titulo') else '' }}"
-                    >
-                    {% if erros.get('titulo') %}
-                        <span class="texto-erro">{{ erros.get('titulo') }}</span>
-                    {% endif %}
-                </div>
+        <form class="formulario" action="{{ url_for('compromisso.criar') }}" method="POST" novalidate>
+            <div class="formulario__cabecalho">
+                <h2 class="formulario__titulo">Novo compromisso</h2>
+                <p class="formulario__descricao">
+                    Informe os dados e selecione as pessoas envolvidas.
+                </p>
             </div>
 
-            <div class="grupo-campo">
-                <label for="descricao">Descrição</label>
-                <textarea
-                    id="descricao"
-                    name="descricao"
-                    class="{{ 'invalido' if erros.get('descricao') else '' }}"
-                >{{ formulario.get('descricao', '') }}</textarea>
-            </div>
-
-            <div class="grupo-campo">
-                <label>Pessoas envolvidas</label>
-
-                <div class="selecao-pessoas">
-                    {% for pessoa in pessoas %}
-                        <label class="opcao-pessoa">
-                            <input
-                                type="checkbox"
-                                name="pessoas"
-                                value="{{ pessoa.id }}"
-                                {{ 'checked' if pessoa.id in formulario.get('pessoas', []) else '' }}
-                            >
-                            <span class="opcao-pessoa__dados">
-                                <strong>{{ pessoa.nome }}</strong>
-                                <small>{{ pessoa.email }}</small>
-                            </span>
-                        </label>
-                    {% else %}
-                        <span class="compromisso-card__sem-pessoas">
-                            Nenhuma pessoa cadastrada — você pode vincular pessoas depois.
-                        </span>
-                    {% endfor %}
-                </div>
-
-                {% if erros.get('pessoas') %}
-                    <span class="texto-erro">{{ erros.get('pessoas') }}</span>
+            <div class="formulario__corpo">
+                {% if erros %}
+                    <div class="resumo-erros" role="alert" tabindex="-1">
+                        <p><strong>Não foi possível cadastrar.</strong> Confira os campos abaixo:</p>
+                        <ul>
+                            {% for campo, mensagem in erros.items() %}
+                                <li>
+                                    <a href="#{{ campo if campo in ['data_horario', 'titulo', 'descricao', 'pessoas'] else 'conteudo' }}">
+                                        {{ mensagem }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 {% endif %}
+
+                <div class="formulario__grid">
+                    <div class="grupo-campo">
+                        <label for="data_horario">Data/Horário</label>
+                        <input
+                            type="datetime-local"
+                            id="data_horario"
+                            name="data_horario"
+                            value="{{ formulario.get('data_horario', '') }}"
+                            aria-describedby="data_horario-ajuda{% if erros.get('data_horario') %} data_horario-erro{% endif %}"
+                            aria-invalid="{{ 'true' if erros.get('data_horario') else 'false' }}"
+                            class="{{ 'invalido' if erros.get('data_horario') else '' }}"
+                        >
+                        <span class="campo-ajuda" id="data_horario-ajuda">
+                            Formato: dd/mm/aaaa hh:mm.
+                        </span>
+                        {% if erros.get('data_horario') %}
+                            <span class="texto-erro" id="data_horario-erro" role="alert">
+                                {{ erros.get('data_horario') }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="grupo-campo">
+                        <label for="titulo">Título</label>
+                        <input
+                            type="text"
+                            id="titulo"
+                            name="titulo"
+                            value="{{ formulario.get('titulo', '') }}"
+                            aria-describedby="{{ 'titulo-erro' if erros.get('titulo') else '' }}"
+                            aria-invalid="{{ 'true' if erros.get('titulo') else 'false' }}"
+                            class="{{ 'invalido' if erros.get('titulo') else '' }}"
+                        >
+                        {% if erros.get('titulo') %}
+                            <span class="texto-erro" id="titulo-erro" role="alert">
+                                {{ erros.get('titulo') }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grupo-campo">
+                    <label for="descricao">Descrição <span class="campo-opcional">(opcional)</span></label>
+                    <span class="campo-ajuda" id="descricao-ajuda">
+                        Detalhes que ajudam a entender o compromisso.
+                    </span>
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        aria-describedby="descricao-ajuda{% if erros.get('descricao') %} descricao-erro{% endif %}"
+                        aria-invalid="{{ 'true' if erros.get('descricao') else 'false' }}"
+                        class="{{ 'invalido' if erros.get('descricao') else '' }}"
+                    >{{ formulario.get('descricao', '') }}</textarea>
+                    {% if erros.get('descricao') %}
+                        <span class="texto-erro" id="descricao-erro" role="alert">
+                            {{ erros.get('descricao') }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <fieldset class="grupo-campo" id="pessoas">
+                    <legend>Pessoas envolvidas <span class="campo-opcional">(opcional)</span></legend>
+                    <span class="campo-ajuda" id="pessoas-ajuda">
+                        Você pode deixar sem ninguém e vincular pessoas depois.
+                    </span>
+
+                    <div class="selecao-pessoas" aria-describedby="pessoas-ajuda{% if erros.get('pessoas') %} pessoas-erro{% endif %}">
+                        {% for pessoa in pessoas %}
+                            <label class="opcao-pessoa">
+                                <input
+                                    type="checkbox"
+                                    name="pessoas"
+                                    value="{{ pessoa.id }}"
+                                    {{ 'checked' if pessoa.id in formulario.get('pessoas', []) else '' }}
+                                >
+                                <span class="opcao-pessoa__dados">
+                                    <strong>{{ pessoa.nome }}</strong>
+                                    <small>{{ pessoa.email }}</small>
+                                </span>
+                            </label>
+                        {% else %}
+                            <span class="campo-ajuda">
+                                Nenhuma pessoa cadastrada — você pode vincular pessoas depois.
+                            </span>
+                        {% endfor %}
+                    </div>
+
+                    {% if erros.get('pessoas') %}
+                        <span class="texto-erro" id="pessoas-erro" role="alert">
+                            {{ erros.get('pessoas') }}
+                        </span>
+                    {% endif %}
+                </fieldset>
+
+                <button type="submit" class="botao">Cadastrar compromisso</button>
             </div>
+        </form>
+    </details>
 
-            <button type="submit" class="botao">Cadastrar compromisso</button>
-        </div>
-    </form>
+    <h2>{{ titulo_lista }}</h2>
 
-    <!-- Lista de Compromissos Cadastrados -->
-    <h2>Compromissos cadastrados</h2>
     {% include "componentes/lista_compromissos.html" %}
 {% endblock %}

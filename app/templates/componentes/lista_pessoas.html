@@ -11,6 +11,11 @@
             </div>
         </article>
     {% else %}
-        <p class="estado-vazio">Nenhuma pessoa cadastrada ainda.</p>
+        <p class="estado-vazio">
+            Nenhuma pessoa cadastrada ainda.
+            <a class="botao-acao" href="{{ url_for('pessoas.index') }}#nova-pessoa">
+                Cadastrar pessoa
+            </a>
+        </p>
     {% endfor %}
 </div>

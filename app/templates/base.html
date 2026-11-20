@@ -4,15 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block titulo %}Agenda de Compromissos{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/formularios.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/componentes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsivo.css') }}">
 </head>
 <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
     <div class="layout">
         {% include "componentes/aside.html" %}
 
-        <main class="conteudo">
+        <main class="conteudo" id="conteudo">
+            {% with mensagens = get_flashed_messages(with_categories=true) %}
+                {% if mensagens %}
+                    <div class="alertas" aria-live="polite">
+                        {% for categoria, mensagem in mensagens %}
+                            <div class="alerta {{ 'alerta--sucesso' if categoria == 'success' else 'alerta--erro' }}"
+                                 role="{{ 'status' if categoria == 'success' else 'alert' }}">
+                                {{ mensagem }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
             {% block conteudo %}{% endblock %}
         </main>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const resumoErros = document.querySelector(".resumo-erros");
+            if (resumoErros) resumoErros.focus();
+
+            if (location.hash) {
+                const alvo = document.getElementById(location.hash.slice(1));
+                if (alvo && alvo.tagName === "DETAILS") alvo.open = true;
+            }
+
+            document.querySelectorAll("form").forEach(function (form) {
+                form.addEventListener("submit", function () {
+                    const botao = form.querySelector('button[type="submit"]');
+                    if (!botao || botao.disabled) return;
+                    botao.dataset.textoOriginal = botao.textContent.trim();
+                    botao.disabled = true;
+                    botao.classList.add("esta-salvando");
+                    botao.textContent = "Salvando…";
+                });
+            });
+
+            document.querySelectorAll(".compromisso-card").forEach(function (card) {
+                const link = card.querySelector(".compromisso-card__link");
+                if (!link) return;
+
+                card.addEventListener("click", function (evento) {
+                    if (evento.button !== 0 || evento.defaultPrevented) return;
+                    if (evento.metaKey || evento.ctrlKey || evento.shiftKey || evento.altKey) return;
+                    if (evento.target.closest("a, button, dialog, summary, input, label, select, textarea")) return;
+
+                    const selecao = window.getSelection();
+                    if (selecao && selecao.toString()) return;
+
+                    window.location.href = link.href;
+                });
+            });
+
+            document.querySelectorAll("[data-abrir-dialog]").forEach(function (botao) {
+                botao.addEventListener("click", function () {
+                    const dialog = document.getElementById(botao.dataset.abrirDialog);
+                    if (!dialog || typeof dialog.showModal !== "function") return;
+                    dialog.showModal();
+                    const cancelar = dialog.querySelector("[data-fechar-dialog]");
+                    if (cancelar) cancelar.focus();
+                    dialog.addEventListener("close", function () { botao.focus(); }, { once: true });
+                });
+            });
+
+            document.querySelectorAll("[data-fechar-dialog]").forEach(function (botao) {
+                botao.addEventListener("click", function () {
+                    botao.closest("dialog").close();
+                });
+            });
+        });
+    </script>
 </body>
 </html>
