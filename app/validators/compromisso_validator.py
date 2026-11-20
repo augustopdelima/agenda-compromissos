@@ -57,12 +57,9 @@ class CompromissoValidador:
         return None
 
     def _validar_pessoas(self, pessoas: list) -> str | None:
-        if not pessoas:
-            return "Selecione ao menos uma pessoa."
-
         return self._validar_ids_pessoas(pessoas)
 
-    # Criação: continua exigindo todos os campos, com as mesmas mensagens
+    # Criação: título e data/horário obrigatórios; pessoas é opcional
     def _validar_criacao(self):
         self.data_horario = self.dados_brutos.get("data_horario", "").strip()
         self.titulo = self.dados_brutos.get("titulo", "").strip()
