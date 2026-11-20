@@ -8,6 +8,7 @@
     --cor-destaque-hover: #1d4ed8;
     --cor-borda: #d1d5db;
     --cor-erro: #dc2626;
+    --cor-erro-hover: #b91c1c;
     --fonte-principal: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -251,6 +252,57 @@ button {
 
 button:hover {
     background-color: var(--cor-destaque-hover);
+}
+
+.compromisso-card__exclusao {
+    align-self: flex-end;
+}
+
+.botao-excluir {
+    width: fit-content;
+    background-color: var(--cor-erro);
+    border-radius: 6px;
+}
+
+@media (hover: hover) {
+    .compromisso-card__acoes > .botao-excluir {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .compromisso-card:hover .compromisso-card__acoes > .botao-excluir,
+    .compromisso-card__acoes > .botao-excluir:focus-visible {
+        opacity: 1;
+        pointer-events: auto;
+        transition: opacity 0.25s ease;
+    }
+}
+
+.botao-excluir:hover {
+    background-color: var(--cor-erro-hover);
+}
+
+.confirma-acao-botoes {
+    display: flex;
+    justify-content: space-around;
+    gap: 0.5rem;
+}
+
+.confirma-acao-dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.confirma-acao-dialog h2 {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+}
+
+.confirma-acao-dialog p {
+    font-weight: 600;
+    color: var(--cor-texto);
 }
 
 .botao {

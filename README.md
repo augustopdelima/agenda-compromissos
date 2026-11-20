@@ -20,7 +20,7 @@ Agenda de compromissos com armazenamento de data/horário, título, descrição 
 - [ ] Alterar título e descrição de um compromisso
 - [ ] Alterar as pessoas envolvidas em um compromisso
 - [ ] Excluir uma pessoa de um compromisso
-- [ ] Excluir um compromisso
+- [x] Excluir um compromisso
 
 ## Estrutura do projeto
 
@@ -126,6 +126,7 @@ flask --app app:iniciar_app run --debug
 | ------ | ------------------ | ----------------------------- |
 | GET    | `/pessoas`         | Listagem + formulário de cadastro |
 | POST   | `/pessoas/criar`   | Cadastra uma nova pessoa      |
+| POST   | `/compromissos/<id>/excluir`   | Excluir um compromisso      |
 
 ## Roadmap
 
