@@ -431,3 +431,39 @@ class TestPessoas(BaseRotasTeste):
             404,
             self.post("/pessoas/id-invalido/editar", {"nome": "Ana"}).status_code,
         )
+
+    def test_listagem_tem_botao_excluir_e_dialog(self):
+        pessoa = self.criar_pessoa("Ana Lima", "ana@exemplo.com")
+
+        html = self.html(self.cliente.get("/pessoas"))
+
+        self.assertIn(f'data-abrir-dialog="excluir-pessoa-{pessoa.id}"', html)
+        self.assertIn('aria-haspopup="dialog"', html)
+        self.assertIn(f'id="excluir-pessoa-{pessoa.id}"', html)
+        self.assertIn(f'action="/pessoas/{pessoa.id}/excluir"', html)
+        self.assertIn("Excluir pessoa?", html)
+        self.assertIn('type="submit">Excluir pessoa</button>', html)
+        self.assertIn("Os compromissos vinculados não serão afetados.", html)
+
+    def test_excluir(self):
+        pessoa = self.criar_pessoa("Ana Lima", "ana@exemplo.com")
+        self.criar_compromisso("Reunião", pessoas=[pessoa])
+
+        resposta = self.post(f"/pessoas/{pessoa.id}/excluir")
+
+        self.assertEqual(302, resposta.status_code)
+        self.assertEqual("/pessoas", self.caminho(resposta))
+        self.assertEqual(0, len(self.db["pessoas"].documentos))
+        self.assertEqual(
+            [pessoa.id], self.db["compromissos"].documentos[0]["pessoas"]
+        )
+
+        html = self.html(self.cliente.get("/pessoas"))
+        self.assertIn("Pessoa excluída com sucesso.", html)
+        self.assertIn("Nenhuma pessoa cadastrada ainda.", html)
+
+    def test_excluir_inexistente(self):
+        resposta = self.post("/pessoas/id-invalido/excluir")
+
+        self.assertEqual(404, resposta.status_code)
+        self.assertIn("404 — Página não encontrada", self.html(resposta))

@@ -43,6 +43,7 @@ class TestConfiguracaoApp(BaseTeste):
         self.assertIn("/", rotas)
         self.assertIn("/pessoas", rotas)
         self.assertIn("/pessoas/<id>/editar", rotas)
+        self.assertIn("/pessoas/<id>/excluir", rotas)
         self.assertIn("/compromissos/<id>", rotas)
 
     def test_fallback_de_secret_key_para_desenvolvimento(self):
