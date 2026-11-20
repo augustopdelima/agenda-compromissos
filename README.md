@@ -14,6 +14,7 @@ Agenda de compromissos com data/horário, título, descrição e pessoas envolvi
 - [x] Cadastrar pessoa (nome + e-mail, com e-mail único)
 - [x] Listar pessoas
 - [x] Editar nome e e-mail da pessoa (mantendo a unicidade do e-mail)
+- [x] Excluir pessoa com confirmação
 
 ### Agenda (compromissos)
 - [x] Listar compromissos
@@ -214,6 +215,7 @@ Os testes cobrem modelos, validadores, helpers, rotas e templates (filtros, deta
 | POST | `/pessoas/criar` | Cadastra uma nova pessoa |
 | GET | `/pessoas/<id>/editar` | Formulário de nome e e-mail da pessoa |
 | POST | `/pessoas/<id>/editar` | Salva nome e/ou e-mail da pessoa |
+| POST | `/pessoas/<id>/excluir` | Exclui uma pessoa após confirmação |
 | GET | `/compromissos` | Listagem + formulário de cadastro de compromissos |
 | POST | `/compromissos/criar` | Cadastra um novo compromisso |
 | GET | `/compromissos/<id>` | Detalhes do compromisso (título, descrição, horário e pessoas) |
