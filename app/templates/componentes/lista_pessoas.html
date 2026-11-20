@@ -20,7 +20,7 @@
                 </a>
                 {{ confirmar_acao(
                     url_for('pessoas.excluir', id=pessoa.id),
-                    'A pessoa "' ~ pessoa.nome ~ '" será removida. Os compromissos vinculados não serão afetados.',
+                    'A pessoa "' ~ pessoa.nome ~ '" será removida e deixará de aparecer nos compromissos vinculados.',
                     'excluir-pessoa-' ~ pessoa.id,
                     titulo='Excluir pessoa?',
                     rotulo='Excluir pessoa'

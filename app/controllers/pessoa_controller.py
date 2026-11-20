@@ -10,7 +10,11 @@ from pymongo.errors import DuplicateKeyError
 
 from helpers.formulario import obter_dados_edicao, obter_url_retorno
 from helpers.renderizacao import renderizar_edicao_pessoa
-from helpers.repositorios import obter_pessoa_ou_404, obter_pessoa_repository
+from helpers.repositorios import (
+    obter_compromisso_repository,
+    obter_pessoa_ou_404,
+    obter_pessoa_repository,
+)
 from models.pessoa import Pessoa
 from validators.pessoa_validator import PessoaValidador
 
@@ -92,6 +96,7 @@ def atualizar(id):
 @pessoa_controller.route("/pessoas/<id>/excluir", methods=["POST"])
 def excluir(id):
     obter_pessoa_ou_404(id)
+    obter_compromisso_repository().remover_pessoa_dos_compromissos(id)
     obter_pessoa_repository().excluir(id)
     flash("Pessoa excluída com sucesso.", "success")
     return redirect(url_for("pessoas.index"))
