@@ -482,6 +482,7 @@
 
 .pessoa-card__dados {
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: 0.2rem;
     min-width: 0;
@@ -501,6 +502,13 @@
 .pessoa-card__email {
     color: var(--cor-texto-suave);
     font-size: 0.8rem;
+}
+
+.pessoa-card__acoes {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: auto;
 }
 
 /* Página de detalhes do compromisso */

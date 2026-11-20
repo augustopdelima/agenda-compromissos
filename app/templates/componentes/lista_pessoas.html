@@ -9,6 +9,14 @@
                     {{ pessoa.email }}
                 </small>
             </div>
+
+            <div class="pessoa-card__acoes">
+                <a class="botao-editar"
+                   href="{{ url_for('pessoas.editar', id=pessoa.id) }}"
+                   aria-label="Editar {{ pessoa.nome }}">
+                    Editar
+                </a>
+            </div>
         </article>
     {% else %}
         <p class="estado-vazio">
