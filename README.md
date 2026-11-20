@@ -1,6 +1,6 @@
 # agenda-compromissos
 
-Agenda de compromissos com armazenamento de data/horário, título, descrição e pessoas envolvidas (cada pessoa é armazenada individualmente).
+Agenda de compromissos com data/horário, título, descrição e pessoas envolvidas. Cada pessoa é cadastrada separadamente na coleção `pessoas`; cada compromisso guarda apenas os ids das pessoas vinculadas.
 
 ## Stack
 
@@ -15,10 +15,10 @@ Agenda de compromissos com armazenamento de data/horário, título, descrição 
 - [x] Listar pessoas
 
 ### Agenda (compromissos)
-- [ ] Listar compromissos
-- [ ] Cadastrar novo compromisso
-- [ ] Alterar título e descrição de um compromisso
-- [ ] Alterar as pessoas envolvidas em um compromisso
+- [x] Listar compromissos
+- [x] Cadastrar novo compromisso
+- [x] Alterar título e descrição de um compromisso
+- [x] Alterar as pessoas envolvidas em um compromisso
 - [ ] Excluir uma pessoa de um compromisso
 - [x] Excluir um compromisso
 
@@ -26,20 +26,42 @@ Agenda de compromissos com armazenamento de data/horário, título, descrição 
 
 ```
 app/
-├── app.py                  # Inicialização da aplicação e registro dos módulos de rotas
-├── controllers/            # Rotas da aplicação
-│   └── pessoa_controller.py
-├── models/                 # Entidades de domínio
-│   └── pessoa.py
-├── repositories/           # Acesso ao MongoDB
-│   └── pessoa_repository.py
-├── validators/             # Validação dos dados de formulário
-│   └── pessoa_validator.py
-└── templates/              # Templates Jinja2
-    └── pessoas/index.html
+├── app.py                          # Inicialização e registro dos blueprints
+├── controllers/                    # Rotas da aplicação
+│   ├── home_controller.py
+│   ├── pessoa_controller.py
+│   └── compromisso_controller.py
+├── models/                         # Entidades de domínio
+│   ├── pessoa.py
+│   └── compromisso.py
+├── repositories/                   # Acesso ao MongoDB
+│   ├── pessoa_repository.py
+│   └── compromisso_repository.py
+├── validators/                     # Validação dos dados de formulário
+│   ├── pessoa_validator.py
+│   └── compromisso_validator.py
+├── static/
+│   └── style.css
+└── templates/                      # Templates Jinja2
+    ├── base.html
+    ├── index.html
+    ├── 404.html
+    ├── componentes/
+    │   ├── aside.html
+    │   ├── confirmar_acao.html
+    │   ├── lista_compromissos.html
+    │   └── lista_pessoas.html
+    ├── compromissos/
+    │   ├── index.html
+    │   ├── editar.html
+    │   └── pessoas.html
+    └── pessoas/
+        └── index.html
 ```
 
 **Camadas:** controller → validator → repository → model. As rotas ficam nos controllers, a validação fica isolada no validator e o acesso ao banco fica nos repositories.
+
+**Referências de pessoas:** o documento do compromisso guarda apenas os ids das pessoas envolvidas, como strings. Não há exclusão em cascata: excluir uma pessoa do cadastro não altera compromissos, e ids que não correspondem mais a nenhuma pessoa cadastrada são ignorados na exibição e deixam de existir quando a lista é salva. Tanto o cadastro quanto a edição permitem lista vazia; basta não selecionar ninguém. A edição substitui a lista inteira.
 
 ## Variáveis de ambiente
 
@@ -122,11 +144,18 @@ flask --app app:iniciar_app run --debug
 
 ## Endpoints
 
-| Método | Rota               | Descrição                     |
-| ------ | ------------------ | ----------------------------- |
-| GET    | `/pessoas`         | Listagem + formulário de cadastro |
-| POST   | `/pessoas/criar`   | Cadastra uma nova pessoa      |
-| POST   | `/compromissos/<id>/excluir`   | Excluir um compromisso      |
+| Método | Rota | Descrição |
+| ------ | ---- | --------- |
+| GET | `/` | Home com listagem de compromissos |
+| GET | `/pessoas` | Listagem + formulário de cadastro de pessoas |
+| POST | `/pessoas/criar` | Cadastra uma nova pessoa |
+| GET | `/compromissos` | Listagem + formulário de cadastro de compromissos |
+| POST | `/compromissos/criar` | Cadastra um novo compromisso |
+| GET | `/compromissos/<id>/editar` | Formulário de título e descrição |
+| POST | `/compromissos/<id>/editar` | Salva título e descrição |
+| GET | `/compromissos/<id>/pessoas` | Gerencia as pessoas envolvidas |
+| POST | `/compromissos/<id>/pessoas` | Substitui a lista de envolvidas |
+| POST | `/compromissos/<id>/excluir` | Exclui um compromisso |
 
 ## Roadmap
 
