@@ -19,7 +19,7 @@ Agenda de compromissos com data/horário, título, descrição e pessoas envolvi
 - [x] Cadastrar novo compromisso
 - [x] Alterar título e descrição de um compromisso
 - [x] Alterar as pessoas envolvidas em um compromisso
-- [ ] Excluir uma pessoa de um compromisso
+- [x] Excluir uma pessoa de um compromisso
 - [x] Excluir um compromisso
 
 ## Estrutura do projeto
