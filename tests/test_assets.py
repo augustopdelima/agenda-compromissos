@@ -41,3 +41,13 @@ class TestAssets(unittest.TestCase):
 
         self.assertIn("--largura-formulario", tokens)
         self.assertIn("input + .campo-ajuda", formularios)
+
+    def test_acoes_do_card_de_pessoa_ficam_em_linha_propria(self):
+        componentes = (
+            DIRETORIO_APP / "static" / "css" / "componentes.css"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('"avatar dados"', componentes)
+        self.assertIn('"acoes acoes"', componentes)
+        self.assertIn("grid-area: acoes;", componentes)
+        self.assertIn("grid-area: dados;", componentes)
