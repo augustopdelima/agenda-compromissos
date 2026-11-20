@@ -443,24 +443,30 @@ class TestPessoas(BaseRotasTeste):
         self.assertIn(f'action="/pessoas/{pessoa.id}/excluir"', html)
         self.assertIn("Excluir pessoa?", html)
         self.assertIn('type="submit">Excluir pessoa</button>', html)
-        self.assertIn("Os compromissos vinculados não serão afetados.", html)
+        self.assertIn("deixará de aparecer nos compromissos vinculados", html)
 
     def test_excluir(self):
         pessoa = self.criar_pessoa("Ana Lima", "ana@exemplo.com")
-        self.criar_compromisso("Reunião", pessoas=[pessoa])
+        bruno = self.criar_pessoa("Bruno", "bruno@exemplo.com")
+        self.criar_compromisso("Reunião", pessoas=[pessoa, bruno])
+        self.criar_compromisso("Almoço", pessoas=[bruno])
 
         resposta = self.post(f"/pessoas/{pessoa.id}/excluir")
 
         self.assertEqual(302, resposta.status_code)
         self.assertEqual("/pessoas", self.caminho(resposta))
-        self.assertEqual(0, len(self.db["pessoas"].documentos))
+        self.assertEqual(1, len(self.db["pessoas"].documentos))
+        documentos = self.db["compromissos"].documentos
+        self.assertEqual(2, len(documentos))
         self.assertEqual(
-            [pessoa.id], self.db["compromissos"].documentos[0]["pessoas"]
+            [[bruno.id], [bruno.id]],
+            [documento["pessoas"] for documento in documentos],
         )
 
         html = self.html(self.cliente.get("/pessoas"))
         self.assertIn("Pessoa excluída com sucesso.", html)
-        self.assertIn("Nenhuma pessoa cadastrada ainda.", html)
+        self.assertIn("Bruno", html)
+        self.assertNotIn("Ana Lima", html)
 
     def test_excluir_inexistente(self):
         resposta = self.post("/pessoas/id-invalido/excluir")

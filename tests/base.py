@@ -29,10 +29,17 @@ from controllers.pessoa_controller import pessoa_controller  # noqa: E402
 
 
 class ResultadoFake:
-    def __init__(self, inserted_id=None, matched_count=0, deleted_count=0):
+    def __init__(
+        self,
+        inserted_id=None,
+        matched_count=0,
+        deleted_count=0,
+        modified_count=0,
+    ):
         self.inserted_id = inserted_id
         self.matched_count = matched_count
         self.deleted_count = deleted_count
+        self.modified_count = modified_count
 
 
 class CursorFake:
@@ -88,6 +95,21 @@ class ColecaoFake:
                 return ResultadoFake(matched_count=1)
         return ResultadoFake(matched_count=0)
 
+    def update_many(self, filtro, atualizacao):
+        modificados = 0
+        for documento in self.documentos:
+            if not self._combina(documento, filtro or {}):
+                continue
+
+            documento.update(atualizacao.get("$set", {}))
+            for campo, valor in atualizacao.get("$pull", {}).items():
+                documento[campo] = [
+                    item for item in documento.get(campo, []) if item != valor
+                ]
+            modificados += 1
+
+        return ResultadoFake(matched_count=modificados, modified_count=modificados)
+
     def delete_one(self, filtro):
         for indice, documento in enumerate(self.documentos):
             if self._combina(documento, filtro or {}):
@@ -98,10 +120,14 @@ class ColecaoFake:
     @staticmethod
     def _combina(documento, filtro):
         for campo, esperado in filtro.items():
+            valor = documento.get(campo)
             if isinstance(esperado, dict) and "$in" in esperado:
-                if documento.get(campo) not in esperado["$in"]:
+                if valor not in esperado["$in"]:
                     return False
-            elif documento.get(campo) != esperado:
+            elif isinstance(valor, (list, tuple)):
+                if esperado not in valor:
+                    return False
+            elif valor != esperado:
                 return False
         return True
 
