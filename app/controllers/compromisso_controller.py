@@ -36,7 +36,14 @@ def criar():
         return renderizar_index(validator.erros, formulario, 400)
 
     obter_compromisso_repository().criar(Compromisso(**validator.dados_limpos))
+    flash("Compromisso cadastrado com sucesso.", "success")
     return redirect(url_for("compromisso.index"))
+
+
+@compromisso_controller.route("/<id>", methods=["GET"])
+def detalhes(id):
+    compromisso = obter_compromisso_ou_404(id)
+    return renderizar_detalhes(compromisso)
 
 
 @compromisso_controller.route("/<id>/editar", methods=["GET"])
@@ -57,13 +64,17 @@ def atualizar(id):
     obter_compromisso_repository().atualizar_titulo_descricao(
         id, validator.dados_limpos
     )
-    return redirect(url_for("compromisso.index"))
+    flash("Compromisso atualizado com sucesso.", "success")
+    return redirect(
+        obter_url_retorno(url_for("compromisso.detalhes", id=id))
+    )
 
 
 @compromisso_controller.route("/<id>/excluir", methods=["POST"])
 def excluir(id):
     obter_compromisso_ou_404(id)
     obter_compromisso_repository().excluir(id)
+    flash("Compromisso excluído com sucesso.", "success")
     return redirect(url_for("compromisso.index"))
 
 
@@ -89,4 +100,7 @@ def atualizar_pessoas(id):
     obter_compromisso_repository().atualizar_pessoas(
         id, validator.dados_limpos["pessoas"]
     )
-    return redirect(url_for("compromisso.index"))
+    flash("Pessoas envolvidas atualizadas com sucesso.", "success")
+    return redirect(
+        obter_url_retorno(url_for("compromisso.detalhes", id=id))
+    )

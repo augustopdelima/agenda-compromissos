@@ -48,4 +48,5 @@ def criar():
             pessoas=repository.buscar_todos(),
         ),400
 
+    flash("Pessoa cadastrada com sucesso.", "success")
     return redirect(url_for("pessoas.index"))
