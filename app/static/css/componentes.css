@@ -508,7 +508,18 @@
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    gap: 0.5rem;
     margin-left: auto;
+}
+
+.pessoa-card__acoes .botao-excluir {
+    background-color: var(--cor-superficie);
+    color: var(--cor-erro);
+    border: 1px solid var(--cor-erro);
+}
+
+.pessoa-card__acoes .botao-excluir:hover {
+    background-color: var(--cor-erro-suave);
 }
 
 /* Página de detalhes do compromisso */

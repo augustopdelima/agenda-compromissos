@@ -1,3 +1,5 @@
+{% from "componentes/confirmar_acao.html" import confirmar_acao %}
+
 <div class="lista-pessoas">
     {% for pessoa in pessoas %}
         <article class="pessoa-card">
@@ -16,6 +18,13 @@
                    aria-label="Editar {{ pessoa.nome }}">
                     Editar
                 </a>
+                {{ confirmar_acao(
+                    url_for('pessoas.excluir', id=pessoa.id),
+                    'A pessoa "' ~ pessoa.nome ~ '" será removida. Os compromissos vinculados não serão afetados.',
+                    'excluir-pessoa-' ~ pessoa.id,
+                    titulo='Excluir pessoa?',
+                    rotulo='Excluir pessoa'
+                ) }}
             </div>
         </article>
     {% else %}
