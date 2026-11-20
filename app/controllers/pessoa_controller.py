@@ -87,3 +87,11 @@ def atualizar(id):
 
     flash("Pessoa atualizada com sucesso.", "success")
     return redirect(obter_url_retorno(url_for("pessoas.index")))
+
+
+@pessoa_controller.route("/pessoas/<id>/excluir", methods=["POST"])
+def excluir(id):
+    obter_pessoa_ou_404(id)
+    obter_pessoa_repository().excluir(id)
+    flash("Pessoa excluída com sucesso.", "success")
+    return redirect(url_for("pessoas.index"))

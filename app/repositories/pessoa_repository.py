@@ -47,3 +47,11 @@ class PessoaRepository:
             {"$set": dados},
         )
         return resultado.matched_count > 0
+
+    # Não há exclusão em cascata: os compromissos guardam apenas o id da pessoa.
+    def excluir(self, id: str) -> bool:
+        if not ObjectId.is_valid(id):
+            return False
+
+        resultado = self.colecao.delete_one({"_id": ObjectId(id)})
+        return resultado.deleted_count > 0
