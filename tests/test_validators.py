@@ -52,6 +52,76 @@ class TestPessoaValidador(BaseTeste):
         self.assertFalse(validador.eh_valido())
         self.assertEqual("Este e-mail já está cadastrado.", validador.erros["email"])
 
+    def test_edicao_aceita_apenas_campos_permitidos(self):
+        validador = PessoaValidador(
+            {"nome": "  Ana Maria  ", "email": " ANA@Exemplo.com "},
+            self.repositorio,
+            modo="edicao",
+            id_pessoa=str(ObjectId()),
+        )
+
+        self.assertTrue(validador.eh_valido())
+        self.assertEqual(
+            {"nome": "Ana Maria", "email": "ana@exemplo.com"},
+            validador.dados_limpos,
+        )
+
+    def test_edicao_valida_apenas_campos_enviados(self):
+        validador = PessoaValidador(
+            {"email": ""},
+            self.repositorio,
+            modo="edicao",
+            id_pessoa=str(ObjectId()),
+        )
+
+        self.assertEqual({"email": "O e-mail é obrigatório."}, validador.erros)
+
+    def test_edicao_rejeita_campos_extras(self):
+        validador = PessoaValidador(
+            {"nome": "Ana", "ativo": "true"},
+            self.repositorio,
+            modo="edicao",
+            id_pessoa=str(ObjectId()),
+        )
+
+        self.assertFalse(validador.eh_valido())
+        self.assertEqual("Este campo não pode ser alterado.", validador.erros["ativo"])
+
+    def test_edicao_sem_campos(self):
+        validador = PessoaValidador(
+            {}, self.repositorio, modo="edicao", id_pessoa=str(ObjectId())
+        )
+
+        self.assertEqual("Informe ao menos um campo para editar.", validador.erros["geral"])
+
+    def test_edicao_permite_manter_o_proprio_email(self):
+        pessoa = self.repositorio.criar(Pessoa("Ana", "ana@exemplo.com"))
+        validador = PessoaValidador(
+            {"nome": "Ana Maria", "email": "ana@exemplo.com"},
+            self.repositorio,
+            modo="edicao",
+            id_pessoa=pessoa.id,
+        )
+
+        self.assertTrue(validador.eh_valido())
+
+    def test_edicao_rejeita_email_de_outra_pessoa(self):
+        self.repositorio.criar(Pessoa("Ana", "ana@exemplo.com"))
+        bruno = self.repositorio.criar(Pessoa("Bruno", "bruno@exemplo.com"))
+        validador = PessoaValidador(
+            {"email": "ana@exemplo.com"},
+            self.repositorio,
+            modo="edicao",
+            id_pessoa=bruno.id,
+        )
+
+        self.assertFalse(validador.eh_valido())
+        self.assertEqual("Este e-mail já está cadastrado.", validador.erros["email"])
+
+    def test_modo_desconhecido(self):
+        with self.assertRaises(ValueError):
+            PessoaValidador({}, self.repositorio, modo="inexistente")
+
 
 class TestCompromissoValidador(BaseTeste):
     def setUp(self):

@@ -20,7 +20,7 @@ from helpers.periodo import (
     filtrar_compromissos_por_periodo,
     obter_periodo,
 )
-from helpers.repositorios import obter_compromisso_ou_404
+from helpers.repositorios import obter_compromisso_ou_404, obter_pessoa_ou_404
 from models.compromisso import Compromisso
 
 
@@ -111,6 +111,20 @@ class TestFormulario(BaseTeste):
                 obter_dados_edicao(),
             )
 
+    def test_obter_dados_edicao_aceita_campos_customizados(self):
+        dados = MultiDict(
+            [
+                ("nome", "Ana Lima"),
+                ("email", "ana@exemplo.com"),
+                ("url_retorno", "http://localhost/pessoas"),
+            ]
+        )
+        with self.app.test_request_context("/pessoas/abc/editar", method="POST", data=dados):
+            self.assertEqual(
+                {"nome": "Ana Lima", "email": "ana@exemplo.com"},
+                obter_dados_edicao(("nome", "email")),
+            )
+
 
 class TestCompromissosHelper(BaseTeste):
     def test_agrupa_pessoas_e_ignora_ids_que_nao_existem(self):
@@ -147,3 +161,17 @@ class TestRepositoriosHelper(BaseTeste):
         with self.app.test_request_context("/"):
             with self.assertRaises(NotFound):
                 obter_compromisso_ou_404(str(ObjectId()))
+
+    def test_obter_pessoa_ou_404(self):
+        pessoa = self.criar_pessoa()
+
+        with self.app.test_request_context("/"):
+            self.assertEqual(pessoa.id, obter_pessoa_ou_404(pessoa.id).id)
+
+        with self.app.test_request_context("/"):
+            with self.assertRaises(NotFound):
+                obter_pessoa_ou_404("id-invalido")
+
+        with self.app.test_request_context("/"):
+            with self.assertRaises(NotFound):
+                obter_pessoa_ou_404(str(ObjectId()))

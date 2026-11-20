@@ -42,6 +42,7 @@ class TestConfiguracaoApp(BaseTeste):
         rotas = {regra.rule for regra in aplicacao.url_map.iter_rules()}
         self.assertIn("/", rotas)
         self.assertIn("/pessoas", rotas)
+        self.assertIn("/pessoas/<id>/editar", rotas)
         self.assertIn("/compromissos/<id>", rotas)
 
     def test_fallback_de_secret_key_para_desenvolvimento(self):

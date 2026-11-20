@@ -330,3 +330,104 @@ class TestPessoas(BaseRotasTeste):
 
         self.assertIn("Nenhuma pessoa cadastrada ainda.", html)
         self.assertIn("/pessoas#nova-pessoa", html)
+
+    def test_listagem_tem_link_de_editar(self):
+        pessoa = self.criar_pessoa()
+
+        html = self.html(self.cliente.get("/pessoas"))
+
+        self.assertIn(f'href="/pessoas/{pessoa.id}/editar"', html)
+        self.assertIn("Editar", html)
+
+    def test_editar_get_preenche_formulario_e_usa_referrer(self):
+        pessoa = self.criar_pessoa("Ana Lima", "ana@exemplo.com")
+        origem = "http://localhost/compromissos"
+
+        resposta = self.cliente.get(
+            f"/pessoas/{pessoa.id}/editar",
+            headers={"Referer": origem},
+        )
+        html = self.html(resposta)
+
+        self.assertEqual(200, resposta.status_code)
+        self.assertIn("Editar pessoa", html)
+        self.assertIn('value="Ana Lima"', html)
+        self.assertIn('value="ana@exemplo.com"', html)
+        self.assertIn(f'name="url_retorno" value="{origem}"', html)
+        self.assertIn(f'href="{origem}"', html)
+
+    def test_editar_post_salva_e_retorna_a_origem(self):
+        pessoa = self.criar_pessoa("Ana", "ana@exemplo.com")
+        origem = "http://localhost/compromissos"
+
+        resposta = self.post(
+            f"/pessoas/{pessoa.id}/editar",
+            {
+                "nome": "  Ana Maria  ",
+                "email": " ANA@exemplo.com ",
+                "url_retorno": origem,
+            },
+        )
+
+        self.assertEqual(302, resposta.status_code)
+        self.assertEqual(origem, resposta.headers["Location"])
+        documento = self.db["pessoas"].documentos[0]
+        self.assertEqual("Ana Maria", documento["nome"])
+        self.assertEqual("ana@exemplo.com", documento["email"])
+        self.assertIn(
+            "Pessoa atualizada com sucesso.",
+            self.html(self.cliente.get(origem)),
+        )
+
+    def test_editar_post_fallback_para_listagem(self):
+        pessoa = self.criar_pessoa()
+        url = f"/pessoas/{pessoa.id}/editar"
+
+        externa = self.post(
+            url, {"nome": "Ana Maria", "url_retorno": "http://externo.com/"}
+        )
+        mesma_pagina = self.post(
+            url, {"nome": "Ana Maria", "url_retorno": f"http://localhost{url}"}
+        )
+
+        self.assertEqual("/pessoas", self.caminho(externa))
+        self.assertEqual("/pessoas", self.caminho(mesma_pagina))
+
+    def test_editar_post_invalido_preserva_origem_e_dados(self):
+        pessoa = self.criar_pessoa("Ana", "ana@exemplo.com")
+        origem = "http://localhost/compromissos"
+
+        resposta = self.post(
+            f"/pessoas/{pessoa.id}/editar",
+            {"nome": "", "email": "invalido", "url_retorno": origem},
+        )
+        html = self.html(resposta)
+
+        self.assertEqual(400, resposta.status_code)
+        self.assertIn("Não foi possível salvar.", html)
+        self.assertIn("O nome é obrigatório.", html)
+        self.assertIn("Digite um endereço de e-mail válido.", html)
+        self.assertIn(f'name="url_retorno" value="{origem}"', html)
+        self.assertEqual("Ana", self.db["pessoas"].documentos[0]["nome"])
+
+    def test_editar_post_rejeita_email_de_outra_pessoa(self):
+        self.criar_pessoa("Ana", "ana@exemplo.com")
+        bruno = self.criar_pessoa("Bruno", "bruno@exemplo.com")
+
+        resposta = self.post(
+            f"/pessoas/{bruno.id}/editar",
+            {"email": "ana@exemplo.com"},
+        )
+
+        self.assertEqual(400, resposta.status_code)
+        self.assertIn("Este e-mail já está cadastrado.", self.html(resposta))
+        self.assertEqual("bruno@exemplo.com", self.db["pessoas"].documentos[1]["email"])
+
+    def test_editar_inexistente(self):
+        self.assertEqual(
+            404, self.cliente.get("/pessoas/id-invalido/editar").status_code
+        )
+        self.assertEqual(
+            404,
+            self.post("/pessoas/id-invalido/editar", {"nome": "Ana"}).status_code,
+        )
