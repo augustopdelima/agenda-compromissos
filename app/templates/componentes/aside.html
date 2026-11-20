@@ -7,11 +7,11 @@
             Home
         </a>
         <a href="{{ url_for('compromisso.index') }}"
-           class="{{ 'ativo' if request.endpoint in ['compromisso.index', 'compromisso.criar'] else '' }}">
+           class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('compromisso.') else '' }}">
             Compromissos
         </a>
         <a href="{{ url_for('pessoas.index') }}"
-           class="{{ 'ativo' if request.endpoint in ['pessoas.index', 'pessoas.criar'] else '' }}">
+           class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('pessoas.') else '' }}">
             Pessoas
         </a>
     </nav>
