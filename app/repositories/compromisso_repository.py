@@ -2,6 +2,7 @@ from models.compromisso import Compromisso
 from datetime import datetime
 from bson import ObjectId
 
+
 class CompromissoRepository:
     def __init__(self, db):
         self.colecao = db["compromissos"]
@@ -11,7 +12,7 @@ class CompromissoRepository:
 
     def criar(self, compromisso: Compromisso) -> Compromisso:
         resultado = self.colecao.insert_one(compromisso.to_dict())
-        
+
         compromisso.id = str(resultado.inserted_id)
         return compromisso
 
@@ -45,3 +46,12 @@ class CompromissoRepository:
             Compromisso.from_dict(documento)
             for documento in resultado
         ]
+
+    # Os IDs das pessoas vinculadas ficam no documento do compromisso.
+    # Ao excluí-lo, esses vínculos são removidos, mas as pessoas permanecem cadastradas.
+    def excluir(self, id: str) -> bool:
+        if not ObjectId.is_valid(id):
+            return False
+
+        resultado = self.colecao.delete_one({"_id": ObjectId(id)})
+        return resultado.deleted_count > 0

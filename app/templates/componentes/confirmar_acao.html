@@ -1,0 +1,19 @@
+{% macro confirmar_acao(rota, mensagem) %}
+    <button type="button" class="botao-excluir"
+            onclick="this.nextElementSibling.showModal()">
+        Excluir
+    </button>
+
+    <dialog class="confirma-acao-dialog">
+        <h2>Confirmar Ação</h2>
+        <p>{{ mensagem }}</p>
+        <form action="{{ rota }}" method="POST">
+            <div class="confirma-acao-botoes">
+                <button type="button" onclick="this.closest('dialog').close()">
+                    Cancelar
+                </button>
+                <button class="botao-excluir" type="submit">Excluir</button>
+            </div>
+        </form>
+    </dialog>
+{% endmacro %}

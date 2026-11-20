@@ -1,3 +1,5 @@
+{% from "componentes/confirmar_acao.html" import confirmar_acao %}
+
 <div class="lista-compromissos">
     {% for item in compromissos %}
         {% set compromisso = item.compromisso %}
@@ -34,6 +36,9 @@
             </div>
 
             <div class="compromisso-card__acoes">
+                <a class="botao-excluir">
+                    {{ confirmar_acao(url_for('compromisso.excluir', id=compromisso.id), 'Tem certeza que deseja excluir este compromisso?') }}
+                </a>
                 <a class="botao-editar"
                    href="{{ url_for('compromisso.editar', id=compromisso.id) }}">
                     Editar

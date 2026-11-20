@@ -4,23 +4,27 @@ from repositories.compromisso_repository import CompromissoRepository
 from repositories.pessoa_repository import PessoaRepository
 from validators.compromisso_validator import CompromissoValidador
 
-compromisso_controller = Blueprint("compromisso",__name__)
+compromisso_controller = Blueprint("compromisso", __name__)
+
 
 def obter_compromisso_repository() -> CompromissoRepository:
     if "compromisso_repository" not in g:
         g.compromisso_repository = CompromissoRepository(current_app.db)
     return g.compromisso_repository
 
+
 def obter_pessoa_repository() -> PessoaRepository:
     if "pessoa_repository" not in g:
         g.pessoa_repository = PessoaRepository(current_app.db)
     return g.pessoa_repository
+
 
 def obter_compromisso_ou_404(id: str) -> Compromisso:
     compromisso = obter_compromisso_repository().buscar_por_id(id)
     if compromisso is None:
         abort(404)
     return compromisso
+
 
 def montar_compromissos_com_pessoas(compromissos: list) -> list[dict]:
     ids_pessoas = [
@@ -44,6 +48,7 @@ def montar_compromissos_com_pessoas(compromissos: list) -> list[dict]:
         for compromisso in compromissos
     ]
 
+
 def obter_dados_formulario() -> dict:
     return {
         "data_horario": request.form.get("data_horario", ""),
@@ -52,12 +57,14 @@ def obter_dados_formulario() -> dict:
         "pessoas": request.form.getlist("pessoas"),
     }
 
+
 def obter_dados_edicao() -> dict:
     return {
         campo: request.form[campo]
         for campo in CompromissoValidador.CAMPOS_EDICAO
         if campo in request.form
     }
+
 
 def renderizar_index(erros: dict | None = None, formulario: dict | None = None, codigo_status: int = 200):
     compromissos = obter_compromisso_repository().buscar_todos()
@@ -70,6 +77,7 @@ def renderizar_index(erros: dict | None = None, formulario: dict | None = None, 
         erros=erros or {},
         formulario=formulario or {},
     ), codigo_status
+
 
 def renderizar_edicao(
     compromisso: Compromisso,
@@ -87,9 +95,11 @@ def renderizar_edicao(
         formulario=formulario,
     ), codigo_status
 
+
 @compromisso_controller.route("/", methods=["GET"], strict_slashes=False)
 def index():
     return renderizar_index()
+
 
 @compromisso_controller.route("/criar", methods=["POST"])
 def criar():
@@ -102,10 +112,12 @@ def criar():
     obter_compromisso_repository().criar(Compromisso(**validator.dados_limpos))
     return redirect(url_for("compromisso.index"))
 
+
 @compromisso_controller.route("/<id>/editar", methods=["GET"])
 def editar(id):
     compromisso = obter_compromisso_ou_404(id)
     return renderizar_edicao(compromisso, {})
+
 
 @compromisso_controller.route("/<id>/editar", methods=["POST"])
 def atualizar(id):
@@ -119,4 +131,11 @@ def atualizar(id):
     obter_compromisso_repository().atualizar_titulo_descricao(
         id, validator.dados_limpos
     )
+    return redirect(url_for("compromisso.index"))
+
+
+@compromisso_controller.route("/<id>/excluir", methods=["POST"])
+def excluir(id):
+    obter_compromisso_ou_404(id)
+    obter_compromisso_repository().excluir(id)
     return redirect(url_for("compromisso.index"))
