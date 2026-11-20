@@ -254,10 +254,6 @@ button:hover {
     background-color: var(--cor-destaque-hover);
 }
 
-.compromisso-card__exclusao {
-    align-self: flex-end;
-}
-
 .botao-excluir {
     width: fit-content;
     background-color: var(--cor-erro);
