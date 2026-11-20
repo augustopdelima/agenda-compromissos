@@ -36,6 +36,16 @@ class CompromissoRepository:
         )
         return resultado.matched_count > 0
 
+    def atualizar_pessoas(self, id: str, lista_ids: list) -> bool:
+        if not ObjectId.is_valid(id):
+            return False
+
+        resultado = self.colecao.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": {"pessoas": lista_ids}},
+        )
+        return resultado.matched_count > 0
+
     def buscar_por_horario(self, horario: datetime) -> list[Compromisso]:
         resultado = self.colecao.find({
             "data_horario": horario
