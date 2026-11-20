@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block titulo %}Pessoas envolvidas — Agenda de Compromissos{% endblock %}
+
+{% block conteudo %}
+    <h1>Pessoas envolvidas</h1>
+
+    <form class="formulario"
+          action="{{ url_for('compromisso.atualizar_pessoas', id=compromisso.id) }}"
+          method="POST"
+          novalidate>
+        <div class="formulario__cabecalho">
+            <h2 class="formulario__titulo">Gerenciar pessoas envolvidas</h2>
+            <p class="formulario__descricao">
+                Selecione ou desmarque as pessoas deste compromisso. A lista anterior
+                será substituída integralmente. Desmarque todas para remover todos
+                os envolvidos.
+            </p>
+        </div>
+
+        <div class="formulario__corpo">
+            <div class="formulario__info">
+                <p><strong>Compromisso:</strong> {{ compromisso.titulo }}</p>
+                <p><strong>Data/Horário:</strong>
+                    {{ compromisso.data_horario.strftime("%d/%m/%Y %H:%M") }}
+                </p>
+                <small>Título, descrição e data/horário permanecem inalterados.</small>
+            </div>
+
+            <div class="grupo-campo">
+                <label>Pessoas envolvidas</label>
+
+                {% set selecionadas = formulario.get('pessoas', compromisso.pessoas) %}
+
+                <div class="selecao-pessoas">
+                    {% for pessoa in pessoas %}
+                        <label class="opcao-pessoa">
+                            <input
+                                type="checkbox"
+                                name="pessoas"
+                                value="{{ pessoa.id }}"
+                                {{ 'checked' if pessoa.id in selecionadas else '' }}
+                            >
+                            <span class="opcao-pessoa__dados">
+                                <strong>{{ pessoa.nome }}</strong>
+                                <small>{{ pessoa.email }}</small>
+                            </span>
+                        </label>
+                    {% else %}
+                        <span class="texto-erro">Cadastre pessoas antes de gerenciar os envolvidos.</span>
+                    {% endfor %}
+                </div>
+
+                {% if erros.get('pessoas') %}
+                    <span class="texto-erro">{{ erros.get('pessoas') }}</span>
+                {% endif %}
+            </div>
+
+            <div class="formulario__acoes">
+                <button type="submit" class="botao">Salvar pessoas</button>
+                <a class="botao-cancelar"
+                   href="{{ url_for('compromisso.index') }}">Cancelar</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
