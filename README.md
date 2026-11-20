@@ -13,6 +13,7 @@ Agenda de compromissos com data/horário, título, descrição e pessoas envolvi
 ### Pessoas
 - [x] Cadastrar pessoa (nome + e-mail, com e-mail único)
 - [x] Listar pessoas
+- [x] Editar nome e e-mail da pessoa (mantendo a unicidade do e-mail)
 
 ### Agenda (compromissos)
 - [x] Listar compromissos
@@ -50,7 +51,7 @@ app/
 │   ├── repositorios.py             # Repositórios em g e busca por id
 │   ├── compromissos.py             # Agrupa compromissos com suas pessoas
 │   ├── formulario.py               # Leitura do form e URLs de retorno
-│   └── renderizacao.py             # Renderização dos templates de compromissos
+│   └── renderizacao.py             # Renderização dos templates da aplicação
 ├── models/                         # Entidades de domínio
 │   ├── pessoa.py
 │   └── compromisso.py
@@ -84,7 +85,8 @@ app/
     │   ├── editar.html
     │   └── pessoas.html
     └── pessoas/
-        └── index.html
+        ├── index.html
+        └── editar.html
 tests/                              # Testes unitários e de rotas (unittest)
 ├── base.py                         # Banco em memória e app de teste
 ├── test_app_config.py
@@ -210,6 +212,8 @@ Os testes cobrem modelos, validadores, helpers, rotas e templates (filtros, deta
 | GET | `/` | Visão geral com resumo e listagem filtrável de compromissos |
 | GET | `/pessoas` | Listagem + formulário de cadastro de pessoas |
 | POST | `/pessoas/criar` | Cadastra uma nova pessoa |
+| GET | `/pessoas/<id>/editar` | Formulário de nome e e-mail da pessoa |
+| POST | `/pessoas/<id>/editar` | Salva nome e/ou e-mail da pessoa |
 | GET | `/compromissos` | Listagem + formulário de cadastro de compromissos |
 | POST | `/compromissos/criar` | Cadastra um novo compromisso |
 | GET | `/compromissos/<id>` | Detalhes do compromisso (título, descrição, horário e pessoas) |
@@ -220,6 +224,8 @@ Os testes cobrem modelos, validadores, helpers, rotas e templates (filtros, deta
 | POST | `/compromissos/<id>/excluir` | Exclui um compromisso |
 
 As listagens de compromissos aceitam `?periodo=todos|proximos|passados`. O padrão é `todos`, e os rótulos exibidos são **Todos**, **Futuros** e **Antigos**, respectivamente.
+
+Os formulários de edição (compromisso e pessoa) guardam a página de origem no campo oculto `url_retorno` e voltam para ela ao salvar ou cancelar. Na edição de pessoa, como não existe página de detalhes, o fallback é `/pessoas`. Alterar o e-mail preserva os compromissos vinculados, pois eles referenciam a pessoa pelo id.
 
 ## Roadmap
 
