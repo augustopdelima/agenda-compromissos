@@ -14,7 +14,7 @@ Agenda de compromissos com data/horário, título, descrição e pessoas envolvi
 - [x] Cadastrar pessoa (nome + e-mail, com e-mail único)
 - [x] Listar pessoas
 - [x] Editar nome e e-mail da pessoa (mantendo a unicidade do e-mail)
-- [x] Excluir pessoa com confirmação
+- [x] Excluir pessoa com confirmação (remove seu id dos compromissos vinculados)
 
 ### Agenda (compromissos)
 - [x] Listar compromissos
@@ -94,13 +94,14 @@ tests/                              # Testes unitários e de rotas (unittest)
 ├── test_assets.py
 ├── test_helpers.py
 ├── test_models.py
+├── test_repositories.py
 ├── test_routes.py
 └── test_validators.py
 ```
 
 **Camadas:** controller → helpers → validator → repository → model. Os controllers ficam apenas com as rotas; os helpers concentram filtros, acesso a repositórios, leitura de formulários e renderização. A validação fica isolada no validator e o acesso ao banco nos repositories.
 
-**Referências de pessoas:** o documento do compromisso guarda apenas os ids das pessoas envolvidas, como strings. Não há exclusão em cascata: excluir uma pessoa do cadastro não altera compromissos, e ids que não correspondem mais a nenhuma pessoa cadastrada são ignorados na exibição e deixam de existir quando a lista é salva. Tanto o cadastro quanto a edição permitem lista vazia; basta não selecionar ninguém. A edição substitui a lista inteira.
+**Referências de pessoas:** o documento do compromisso guarda apenas os ids das pessoas envolvidas, como strings. Ao excluir uma pessoa, seu id é removido de todos os compromissos vinculados — os compromissos em si permanecem. Ids que por algum motivo não correspondem mais a nenhuma pessoa cadastrada são ignorados na exibição. Tanto o cadastro quanto a edição permitem lista vazia; basta não selecionar ninguém. A edição substitui a lista inteira.
 
 ## Variáveis de ambiente
 
@@ -215,7 +216,7 @@ Os testes cobrem modelos, validadores, helpers, rotas e templates (filtros, deta
 | POST | `/pessoas/criar` | Cadastra uma nova pessoa |
 | GET | `/pessoas/<id>/editar` | Formulário de nome e e-mail da pessoa |
 | POST | `/pessoas/<id>/editar` | Salva nome e/ou e-mail da pessoa |
-| POST | `/pessoas/<id>/excluir` | Exclui uma pessoa após confirmação |
+| POST | `/pessoas/<id>/excluir` | Exclui uma pessoa e remove seu id dos compromissos |
 | GET | `/compromissos` | Listagem + formulário de cadastro de compromissos |
 | POST | `/compromissos/criar` | Cadastra um novo compromisso |
 | GET | `/compromissos/<id>` | Detalhes do compromisso (título, descrição, horário e pessoas) |
