@@ -265,13 +265,13 @@ button:hover {
 }
 
 @media (hover: hover) {
-    .compromisso-card .botao-excluir {
+    .compromisso-card__acoes > .botao-excluir {
         opacity: 0;
         pointer-events: none;
     }
 
-    .compromisso-card:hover .botao-excluir,
-    .compromisso-card .botao-excluir:focus-visible {
+    .compromisso-card:hover .compromisso-card__acoes > .botao-excluir,
+    .compromisso-card__acoes > .botao-excluir:focus-visible {
         opacity: 1;
         pointer-events: auto;
         transition: opacity 0.25s ease;
@@ -491,8 +491,34 @@ button:hover {
     border-top: 1px solid #f3f4f6;
     padding-top: 0.8rem;
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 0.5rem;
+}
+
+.botao-pessoas {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--cor-texto);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.botao-pessoas::before {
+    content: "☰";
+    font-size: 0.9rem;
+}
+
+.botao-pessoas:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
 }
 
 .botao-editar {

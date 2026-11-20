@@ -36,8 +36,10 @@
             </div>
 
             <div class="compromisso-card__acoes">
-                <a class="botao-excluir">
-                    {{ confirmar_acao(url_for('compromisso.excluir', id=compromisso.id), 'Tem certeza que deseja excluir este compromisso?') }}
+                {{ confirmar_acao(url_for('compromisso.excluir', id=compromisso.id), 'Tem certeza que deseja excluir este compromisso?') }}
+                <a class="botao-pessoas"
+                   href="{{ url_for('compromisso.gerenciar_pessoas', id=compromisso.id) }}">
+                    Pessoas
                 </a>
                 <a class="botao-editar"
                    href="{{ url_for('compromisso.editar', id=compromisso.id) }}">

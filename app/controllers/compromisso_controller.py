@@ -96,6 +96,23 @@ def renderizar_edicao(
     ), codigo_status
 
 
+def renderizar_pessoas(
+    compromisso: Compromisso,
+    formulario: dict,
+    erros: dict | None = None,
+    codigo_status: int = 200,
+):
+    pessoas = obter_pessoa_repository().buscar_todos()
+
+    return render_template(
+        "compromissos/pessoas.html",
+        compromisso=compromisso,
+        pessoas=pessoas,
+        formulario=formulario,
+        erros=erros or {},
+    ), codigo_status
+
+
 @compromisso_controller.route("/", methods=["GET"], strict_slashes=False)
 def index():
     return renderizar_index()
@@ -138,4 +155,29 @@ def atualizar(id):
 def excluir(id):
     obter_compromisso_ou_404(id)
     obter_compromisso_repository().excluir(id)
+    return redirect(url_for("compromisso.index"))
+
+
+@compromisso_controller.route("/<id>/pessoas", methods=["GET"])
+def gerenciar_pessoas(id):
+    compromisso = obter_compromisso_ou_404(id)
+    return renderizar_pessoas(compromisso, {})
+
+
+@compromisso_controller.route("/<id>/pessoas", methods=["POST"])
+def atualizar_pessoas(id):
+    compromisso = obter_compromisso_ou_404(id)
+    ids_pessoas = request.form.getlist("pessoas")
+    validator = CompromissoValidador(
+        {"pessoas": ids_pessoas}, obter_pessoa_repository(), modo="pessoas"
+    )
+
+    if not validator.eh_valido():
+        return renderizar_pessoas(
+            compromisso, {"pessoas": ids_pessoas}, validator.erros, 400
+        )
+
+    obter_compromisso_repository().atualizar_pessoas(
+        id, validator.dados_limpos["pessoas"]
+    )
     return redirect(url_for("compromisso.index"))
