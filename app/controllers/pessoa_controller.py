@@ -1,15 +1,18 @@
-from flask import Blueprint, g, current_app, request, render_template, redirect, url_for
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+)
 from pymongo.errors import DuplicateKeyError
+
+from helpers.repositorios import obter_pessoa_repository
 from models.pessoa import Pessoa
-from repositories.pessoa_repository import PessoaRepository
 from validators.pessoa_validator import PessoaValidador
 
-pessoa_controller = Blueprint("pessoas",__name__)
-
-def obter_pessoa_repository() -> PessoaRepository:
-    if "pessoa_repository" not in g:
-        g.pessoa_repository = PessoaRepository(current_app.db)
-    return g.pessoa_repository
+pessoa_controller = Blueprint("pessoas", __name__)
 
 @pessoa_controller.route("/pessoas", methods=["GET"])
 def index():
